@@ -1,0 +1,13 @@
+<p>register works!</p>
+
+<form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+  <input formControlName="username" placeholder="Username" />
+  <input formControlName="email" placeholder="Email" />
+  <input formControlName="password" type="password" placeholder="Password" />
+  <input formControlName="confirmPassword" type="password" placeholder="Confirm Password" />
+  <button type="submit">Register</button>
+</form>
+
+<div *ngIf="registerForm.get('confirmPassword')?.hasError('mismatch') && registerForm.get('confirmPassword')?.touched">
+  Passwords not matched.
+</div>

@@ -1,0 +1,32 @@
+<div class="chat-room">
+
+  <!-- Header -->
+  <div class="chat-header">
+    <h3>{{ groupName }}</h3>
+  </div>
+
+  <!-- Messages -->
+  <div *ngFor="let msg of messages" class="message">
+    <div class="message-header">
+      <strong>{{ msg.senderName }}</strong>
+      <small class="timestamp">{{ msg.sentAt | date:'short' }}</small>
+    </div>
+    <div class="message-content">
+      {{ msg.content }}
+      <!-- Status Icons -->
+      <small class="status" [ngClass]="msg.status"></small>
+      <button *ngIf="msg.senderID === userId"
+              class="delete-btn"
+              (click)="deleteMessage(msg.messageID)">
+        🗑
+      </button>
+    </div>
+  </div>
+
+  <!-- Send Message Form -->
+  <form [formGroup]="messageForm" (ngSubmit)="sendMessage()" class="message-form">
+    <input formControlName="content" placeholder="Send Message..." />
+    <button type="submit" [disabled]="messageForm.invalid">Send</button>
+  </form>
+
+</div>

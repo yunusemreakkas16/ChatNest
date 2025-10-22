@@ -1,0 +1,57 @@
+### .NET / C# için ###
+bin/
+obj/
+[Bb]uild/
+[Ll]og/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.vs/
+*.vscode/
+*.dbmdl
+*.bak
+*.Backup
+*.log
+*.pdb
+*.cache
+*.dll
+*.exe
+
+# Rider / ReSharper
+.idea/
+*.DotSettings.user
+
+# Paketler
+packages/
+*.nupkg
+*.snupkg
+
+# Publish çıktıları
+publish/
+out/
+
+### Angular / Node için ###
+# Node modülleri
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Derleme çıktıları
+dist/
+tmp/
+out-tsc/
+
+# Angular cache
+.angular/
+
+# IDE / Editor
+.vscode/
+.idea/
+
+# Çeşitli
+*.env
+.DS_Store
+Thumbs.db
