@@ -1,0 +1,137 @@
+/* Container */
+.group-settings {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 12px;
+  background: #f7f7f7;
+  min-height: 100%;
+}
+
+/* Header */
+.gs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #555;
+  color: #fff;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+.gs-title { margin: 0; font-size: 1rem; font-weight: 600; }
+.gs-back {
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid #fff;
+  padding: 4px 8px;
+  border-radius: 6px;
+  transition: background 0.2s;
+}
+.gs-back:hover { background: rgba(255,255,255,0.15); }
+
+/* Card */
+.gs-card {
+  background: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  padding: 12px;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+}
+
+/* Row */
+.gs-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.gs-label { color: #666; font-weight: 600; }
+.gs-value { color: #222; }
+
+/* Edit */
+.gs-edit {
+  margin-top: 10px;
+  display: flex;
+  gap: 8px;
+}
+.gs-edit input {
+  flex: 1;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fafafa;
+}
+.gs-edit button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  background: #4fc3f7;
+  color: white;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.05s;
+}
+.gs-edit button:hover { background: #039be5; }
+.gs-edit button:active { transform: scale(0.98); }
+
+/* Section title */
+.gs-section-title {
+  font-weight: 600;
+  color: #444;
+  margin-bottom: 8px;
+}
+
+/* Members list */
+.gs-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.gs-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 6px;
+  border-bottom: 1px solid #eee;
+}
+.gs-list-item:last-child { border-bottom: none; }
+
+.gs-member {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.gs-user { font-weight: 600; color: #222; }
+.gs-badge {
+  font-size: 0.75rem;
+  color: #fff;
+  background: #7cb342;
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+/* Actions */
+.gs-actions {
+  display: flex;
+  gap: 8px;
+}
+.gs-actions button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  background: #eee;
+  color: #222;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.05s;
+}
+.gs-actions button:hover { background: #e0e0e0; }
+.gs-actions button:active { transform: scale(0.98); }
+.gs-actions .danger {
+  background: #ef9a9a;
+  color: #382121;
+}
+.gs-actions .danger:hover { background: #e57373; }
+
+/* Responsive */
+@media (max-width: 600px) {
+  .gs-list-item { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .gs-actions { align-self: flex-end; }
+}

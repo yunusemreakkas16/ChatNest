@@ -340,5 +340,43 @@ namespace ChatNest.Repositories
             }
             return response;
         }
+
+        public async Task<GetChatMembersResponseModel> GetChatMembers(Guid chatID)
+        {
+            var response = new GetChatMembersResponseModel();
+
+            try
+            {
+                using(SqlConnection connection = new SqlConnection(configuration.GetConnectionString("ChatNestConnectionString")))
+                {
+                    var parameters = new DynamicParameters();
+
+                    parameters.Add("@chatID", chatID, DbType.Guid);
+                    parameters.Add("@messageID", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    parameters.Add("@messageDescription", dbType: DbType.String, size: 255, direction: ParameterDirection.Output);
+
+                    var members = await connection.QueryAsync<ChatMembersResponse>("usp_GetChatMembers", parameters, commandType: CommandType.StoredProcedure);
+
+                    response.Members = members.ToList();
+                    response.MessageID = parameters.Get<int>("@messageID");
+                    response.MessageDescription = parameters.Get<string>("@messageDescription");
+
+                }
+            }
+
+            catch (SqlException sqlEx)
+            {
+                response.MessageID = -99;
+                response.MessageDescription = $"Database error: {sqlEx.Message}";
+            }
+            catch (Exception ex)
+            {
+                response.MessageID = -100;
+                response.MessageDescription = $"Unexpected error: {ex.Message}";
+            }
+
+            return response;
+        }
+
     }
 }

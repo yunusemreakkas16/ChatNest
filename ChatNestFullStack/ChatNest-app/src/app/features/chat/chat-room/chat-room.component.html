@@ -2,24 +2,38 @@
 
   <!-- Header -->
   <div class="chat-header">
-    <h3>{{ groupName }}</h3>
+    <h3 class="chat-title">{{ groupName }}</h3>
+
+    <button [routerLink]="['/chats/group-settings', chatId]" class="settings-btn">
+      ⚙️ Group Settings
+    </button>
   </div>
 
-  <!-- Messages -->
-  <div *ngFor="let msg of messages" class="message">
-    <div class="message-header">
-      <strong>{{ msg.senderName }}</strong>
-      <small class="timestamp">{{ msg.sentAt | date:'short' }}</small>
-    </div>
-    <div class="message-content">
-      {{ msg.content }}
-      <!-- Status Icons -->
-      <small class="status" [ngClass]="msg.status"></small>
-      <button *ngIf="msg.senderID === userId"
-              class="delete-btn"
-              (click)="deleteMessage(msg.messageID)">
-        🗑
-      </button>
+  <!-- Messages scroll area -->
+  <div class="messages">
+    <div *ngFor="let msg of messages"
+         class="message"
+         [ngClass]="msg.senderID === userId ? 'self' : 'other'">
+
+      <div class="message-header">
+        <strong class="sender">{{ msg.senderName }}</strong>
+        <small class="timestamp">{{ msg.sentAt | date:'short' }}</small>
+      </div>
+
+      <div class="message-content">
+        <span class="message-text">{{ msg.content }}</span>
+
+        <div class="message-icons">
+          <small class="status" [ngClass]="msg.status"></small>
+
+          <button *ngIf="msg.senderID === userId"
+                  class="icon-btn"
+                  title="Delete message"
+                  (click)="deleteMessage(msg.messageID)">
+            🗑
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 

@@ -3,17 +3,20 @@ import { CommonModule } from '@angular/common';
 
 import { ChatRoutingModule } from './chat-routing.module';
 import { ChatRoomComponent } from './chat-room/chat-room.component';
-import { FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { GroupSettingsComponent } from './group-settings/group-settings.component';
 
 
 @NgModule({
   declarations: [
-    ChatRoomComponent
+    ChatRoomComponent,
+    GroupSettingsComponent
   ],
   imports: [
     CommonModule,
     ChatRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FormsModule
   ]
 })
 export class ChatModule { }

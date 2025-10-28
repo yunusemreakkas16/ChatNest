@@ -1,0 +1,41 @@
+<div class="group-settings">
+
+  <!-- Header -->
+  <div class="gs-header">
+    <h3 class="gs-title">Group Settings</h3>
+    <a [routerLink]="['/chats', chatID]" class="gs-back">← Back to chat</a>
+  </div>
+
+  <!-- Group name section -->
+  <section class="gs-card">
+    <div class="gs-row">
+      <div class="gs-label">Group name</div>
+      <div class="gs-value">{{ groupName }}</div>
+    </div>
+
+    <div *ngIf="currentUserIsAdmin" class="gs-edit">
+      <input [(ngModel)]="groupName" placeholder="New group name" />
+      <button (click)="updateGroupName()">Update name</button>
+    </div>
+  </section>
+
+  <!-- Members list -->
+  <section class="gs-card">
+    <div class="gs-section-title">Members</div>
+
+    <ul class="gs-list">
+      <li *ngFor="let member of members" class="gs-list-item">
+        <div class="gs-member">
+          <span class="gs-user">{{ member.userName }}</span>
+          <span *ngIf="member.isAdmin" class="gs-badge">Admin</span>
+        </div>
+
+        <div class="gs-actions" *ngIf="currentUserIsAdmin">
+          <button *ngIf="!member.isAdmin" (click)="makeAdmin(member)">Make admin</button>
+          <button class="danger" (click)="removeUser(member)">Remove</button>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+</div>

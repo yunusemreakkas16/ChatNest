@@ -21,5 +21,7 @@ namespace ChatNest.Services
         Task<DeleteChatResponseModel> DeleteChatAsync(Guid chatID, Guid requesterID);
         // Manage group admin (for group chats)
         Task<ManageGroupAdmin> SetGroupAdminAsync(SetGroupAdminRequestDTO setGroupAdminRequestDTO);
+        // Get chat members
+        Task<GetChatMembersResponseModel> GetChatMembersAsync(Guid chatID);
     }
 }

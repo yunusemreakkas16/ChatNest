@@ -21,6 +21,16 @@ namespace ChatNest.Models.Domain
         public bool? isDeleted { get; set; }
     }
 
+    public class ChatMembersResponse
+    {
+        public Guid ChatID { get; set; }
+        public Guid UserID { get; set; }
+        public string UserName { get; set; }
+        public bool isAdmin { get; set; }
+        public DateTime? JoinedAt { get; set; }
+    }
+
+
     public class ChatSummary
     {
         public Guid ChatID { get; set; }
@@ -35,6 +45,11 @@ namespace ChatNest.Models.Domain
     public class ChatResponseModel : BaseResponse
     {
         public List<ChatSummary> Chats { get; set; } = new(); // avoid null reference exceptions
+    }
+
+    public class GetChatMembersResponseModel : BaseResponse
+    {
+        public List<ChatMembersResponse> Members { get; set; } = new(); // avoid null reference exceptions
     }
 
     public class CreateChatResponseModel : BaseResponse { }

@@ -84,5 +84,10 @@ namespace ChatNest.Services
 
             return await chatRepository.UpdateGroupNameAsync(updateGroupNameRequestDTO.ChatID, updateGroupNameRequestDTO.UserID, updateGroupNameRequestDTO.NewName );
         }
+
+        public Task<GetChatMembersResponseModel> GetChatMembersAsync(Guid chatID)
+        {
+            return chatRepository.GetChatMembers(chatID);
+        }
     }
 }

@@ -146,5 +146,20 @@ namespace ChatNest.Controllers
                 _ => BadRequest(response)
             };
         }
+
+        [Authorize]
+        [HttpPost]
+        [Route("GetChatMembers")]
+        public async Task<ActionResult<GetChatMembersResponseModel>> GetChatMembersAsync(Guid chatID)
+        {
+            var response = await chatService.GetChatMembersAsync(chatID);
+            return response.MessageID switch
+            {
+                1 => Ok(response),
+                -1 => NotFound(response),
+                -99 => StatusCode(500, response),
+                _ => BadRequest(response)
+            };
+        }
     }
 }

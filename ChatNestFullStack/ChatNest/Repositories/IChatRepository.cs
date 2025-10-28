@@ -27,5 +27,7 @@ namespace ChatNest.Repositories
 
         // Manage group admin (for group chats)
         Task<ManageGroupAdmin> SetGroupAdminAsync(Guid chatID, Guid adminID, Guid userID, bool makeAdmin);
+
+        Task<GetChatMembersResponseModel>GetChatMembers(Guid chatID);
     }
 }
