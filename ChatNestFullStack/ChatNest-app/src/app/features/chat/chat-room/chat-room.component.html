@@ -4,9 +4,12 @@
   <div class="chat-header">
     <h3 class="chat-title">{{ groupName }}</h3>
 
-    <button [routerLink]="['/chats/group-settings', chatId]" class="settings-btn">
-      ⚙️ Group Settings
-    </button>
+    <div class="header-actions">
+      <button class="back-btn" [routerLink]="['/chats']">← Back</button>
+      <button [routerLink]="['/chats/group-settings', chatId]" class="settings-btn">
+        ⚙️ Settings
+      </button>
+    </div>
   </div>
 
   <!-- Messages scroll area -->
@@ -25,7 +28,6 @@
 
         <div class="message-icons">
           <small class="status" [ngClass]="msg.status"></small>
-
           <button *ngIf="msg.senderID === userId"
                   class="icon-btn"
                   title="Delete message"

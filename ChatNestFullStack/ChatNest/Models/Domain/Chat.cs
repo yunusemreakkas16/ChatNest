@@ -52,8 +52,11 @@ namespace ChatNest.Models.Domain
         public List<ChatMembersResponse> Members { get; set; } = new(); // avoid null reference exceptions
     }
 
-    public class CreateChatResponseModel : BaseResponse { }
-    public class AddUserToChatResponseModel : BaseResponse { }
+    public class CreateChatResponseModel : BaseResponse{}
+    public class AddUserToChatResponseModel : BaseResponse
+    {
+        public List<ChatMembersResponse> Members { get; set; } = new(); // avoid null reference exceptions
+    }
     public class RemoveUserFromChatResponseModel : BaseResponse { }
     public class LeaveChatResponseModel : BaseResponse { }
     public class DeleteChatResponseModel : BaseResponse { }

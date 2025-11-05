@@ -9,7 +9,7 @@
   <!-- Group name section -->
   <section class="gs-card">
     <div class="gs-row">
-      <div class="gs-label">Group name</div>
+      <div class="gs-label">Group Name</div>
       <div class="gs-value">{{ groupName }}</div>
     </div>
 
@@ -36,6 +36,11 @@
         </div>
       </li>
     </ul>
-  </section>
+      <!-- Add user section -->
+  <div *ngIf="currentUserIsAdmin" class="gs-edit">
+    <input [(ngModel)]="newUserId" placeholder="Enter user ID to add" />
+    <button (click)="addUser(newUserId)">Add user</button>
+  </div>
 
+  </section>
 </div>

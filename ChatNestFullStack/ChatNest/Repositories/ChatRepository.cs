@@ -17,11 +17,7 @@ namespace ChatNest.Repositories
 
         public async Task<AddUserToChatResponseModel> AddUserToChatAsync(Guid chatID, Guid adminID, List<Guid>? userIDs)
         {
-            var response = new AddUserToChatResponseModel
-            {
-                MessageID = 0,
-                MessageDescription = string.Empty
-            };
+            var response = new AddUserToChatResponseModel();
 
             try
             {
@@ -35,10 +31,12 @@ namespace ChatNest.Repositories
                     parameters.Add("@messageID", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     parameters.Add("@messageDescription", dbType: DbType.String, size: 255, direction: ParameterDirection.Output);
 
-                    await connection.ExecuteAsync("usp_AddUserToGroupChat", parameters, commandType: CommandType.StoredProcedure);
+                    var members = await connection.QueryAsync<ChatMembersResponse>("usp_AddUserToGroupChat", parameters, commandType: CommandType.StoredProcedure);
+
 
                     response.MessageID = parameters.Get<int>("@messageID");
                     response.MessageDescription = parameters.Get<string>("@messageDescription");
+                    response.Members = members.ToList();
                 }
             }
 

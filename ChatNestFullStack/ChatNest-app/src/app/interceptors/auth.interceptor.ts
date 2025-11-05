@@ -14,7 +14,7 @@ export class AuthInterceptor implements HttpInterceptor {
   constructor(private auth: AuthService, private router: Router) {}
 
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    // 🟢 DEĞİŞEN: RefreshToken isteğine Authorization header EKLEME
+    // Adding Authorization header
     if (req.url.includes('/Auth/RefreshToken')) {
       return next.handle(req);
     }

@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ChatService } from '../services/chat.service';
-import { ChatMember, GetChatMembersResponseModel } from 'src/app/models/chat-member';
 import { RemoveUserRequestDTO, SetGroupAdminRequestDTO, UpdateGroupNameRequestDTO } from 'src/app/models/chats-request';
+import { AuthService } from 'src/app/services/auth.service';
+import { ChatMember, GetChatMembersResponseModel } from 'src/app/models/chats-response';
 
 @Component({
   selector: 'app-group-settings',
@@ -17,12 +18,17 @@ export class GroupSettingsComponent implements OnInit {
   groupName: string = '';
   members: ChatMember[] = [];
 
-  constructor(private route: ActivatedRoute,
-    private chatService: ChatService) { }
+  newUserId: string = '';
+
+  constructor(
+    private route: ActivatedRoute,
+    private chatService: ChatService,
+    private authService: AuthService) { }
 
   ngOnInit(): void {
     this.chatID = this.route.snapshot.paramMap.get('id')!;
     this.currentUserID = localStorage.getItem('userID') ?? '';
+    this.currentUserID = this.authService.getUserId() || '';
     this.loadMembers();
 
   }
@@ -33,6 +39,9 @@ export class GroupSettingsComponent implements OnInit {
         this.members = res.members;
         
         this.currentUserIsAdmin = this.members.find(m => m.userID === this.currentUserID)?.isAdmin ?? false;
+        console.log('currentUserID:', this.currentUserID);
+        console.log('members:', this.members);
+
 
       } else {
         console.error(res.messageDescription);
@@ -72,6 +81,48 @@ export class GroupSettingsComponent implements OnInit {
       }
     });
   }
+
+addUser(newUserId: string): void {
+  const ids = this.newUserId
+    .split(',')
+    .map(id => id.trim())
+    .filter(id => id.length > 0);
+
+  const payload = {
+    chatID: this.chatID,
+    userIDs: ids, // Array of user IDs
+    adminID: this.currentUserID
+  };
+  
+  this.chatService.addUserToChat(payload).subscribe({
+    next: res => {
+      if (res.messageID === 1) {
+        // Return only new members
+        res.members.forEach(m => {
+          if (!this.members.find(x => x.userID === m.userID)) {
+            this.members.push(m);
+          }
+        });
+        this.newUserId = ''; // Clean input field
+      } else {
+        console.error('Business error:', res.messageDescription);
+      }
+    },
+    error: err => {
+    // const backendMsg = err.error?.messageDescription || err.message;
+      const backendMsg = err.error?.messageDescription || err.message;
+      alert(`Users could not be added: ${backendMsg}`);
+      console.error('HTTP error:', err);
+
+    },
+    complete: () => {
+      console.log('Add user request completed');
+    }
+  });
+}
+
+
+
 
   removeUser(member: ChatMember): void {
     const payload: RemoveUserRequestDTO = {
