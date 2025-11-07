@@ -41,6 +41,11 @@
     <input [(ngModel)]="newUserId" placeholder="Enter user ID to add" />
     <button (click)="addUser(newUserId)">Add user</button>
   </div>
+  </section>
 
+  <!-- Delete, Leave Group -->
+  <section class="gs-card gs-danger-zone">
+    <button *ngIf="currentUserIsAdmin" class="danger" (click)="deleteChat()">🗑 Delete Group</button>
+    <button class="danger" (click)="leaveChat()">🚪 Leave Group</button>
   </section>
 </div>
