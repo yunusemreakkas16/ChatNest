@@ -1,0 +1,28 @@
+<div class="friend-page">
+
+  <!-- Header -->
+  <div class="chat-header">
+    <h3 class="chat-title">My Friends</h3>
+    <div class="header-actions">
+      <button class="header-btn" routerLink="/friendship/addFriend">➕ Add Friend</button>
+      <button class="header-btn" routerLink="/chats">💬 Chats</button>
+    </div>
+  </div>
+
+  <!-- Friend List -->
+  <div class="friend-list">
+    <div *ngIf="friends.length === 0" class="empty-message">
+      You don't have any friends yet.
+    </div>
+
+    <div *ngFor="let friend of friends" class="friend-item">
+      <div class="friend-info">
+        <div class="friend-name">{{ friend.friendName }}</div>
+        <div class="friend-mail">{{ friend.friendMail }}</div>
+        <div class="friend-date">{{ friend.createdAt | date:'short' }}</div>
+      </div>
+      <button (click)="RemoveFriend(friend.friendID)" class="remove-btn">Remove</button>
+    </div>
+  </div>
+
+</div>

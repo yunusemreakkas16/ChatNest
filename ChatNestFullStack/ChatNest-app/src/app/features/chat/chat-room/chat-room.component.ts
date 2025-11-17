@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MessageService } from '../services/message.service';
-import { AuthService } from 'src/app/services/auth.service';
+import { AuthService } from 'src/app/features/authenticate/services/auth.service';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MessageViewModel } from 'src/app/models/view-models/message-view';
+import { MessageViewModel } from 'src/app/features/chat/models/view-models/message-view';
 import { ChatService } from '../services/chat.service';
 
 @Component({

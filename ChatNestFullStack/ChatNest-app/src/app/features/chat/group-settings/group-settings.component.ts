@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ChatService } from '../services/chat.service';
-import { RemoveUserRequestDTO, SetGroupAdminRequestDTO, UpdateGroupNameRequestDTO } from 'src/app/models/chats-request';
-import { AuthService } from 'src/app/services/auth.service';
-import { ChatMember, GetChatMembersResponseModel } from 'src/app/models/chats-response';
+import { RemoveUserRequestDTO, SetGroupAdminRequestDTO, UpdateGroupNameRequestDTO } from 'src/app/features/chat/models/chats-request';
+import { AuthService } from 'src/app/features/authenticate/services/auth.service';
+import { ChatMember, GetChatMembersResponseModel } from 'src/app/features/chat/models/chats-response';
 
 @Component({
   selector: 'app-group-settings',

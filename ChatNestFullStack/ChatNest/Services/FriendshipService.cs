@@ -36,10 +36,10 @@ namespace ChatNest.Services
             return await FriendshipRepository.RemoveFriendAsync(userId, friendId);
         }
 
-        public async Task<ManageFriendRequestResponseModel> RespondToFriendRequestAsync(Guid userId, Guid requesterId, IFriendshipService.FriendRequestAction action)
+        public async Task<ManageFriendRequestResponseModel> ManageFriendRequestAsync(Guid clientUserID, Guid otherUserID, IFriendshipService.FriendRequestAction action)
         {
             var actionString = action.ToString().ToLower();
-            var response = await FriendshipRepository.ManageFriendRequestAsync(userId, requesterId, actionString);
+            var response = await FriendshipRepository.ManageFriendRequestAsync(clientUserID, otherUserID, actionString);
             return response;
         }
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApiService } from '../../api.service';
 import { Observable } from 'rxjs';
-import { DeleteMessageResponseModel, MessagesListResponseModel, SendMessageResponseModel } from 'src/app/models/message-response';
+import { DeleteMessageResponseModel, MessagesListResponseModel, SendMessageResponseModel } from 'src/app/features/chat/models/message-response';
 
 @Injectable({
   providedIn: 'root'

@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { ApiService } from '../../api.service';
-import { ChatResponseModel, ChatResponse, CreateChatResponseModel, AddUserToChatResponseModel, RemoveUserFromChatResponseModel, DeleteChatResponseModel, LeaveChatResponseModel, ManageGroupAdminResponseModel, UpdateGroupNameResponseModel, GetChatMembersResponseModel } from 'src/app/models/chats-response';
-import { AddUserRequestDTO, CreateChatRequestDTO, RemoveUserRequestDTO, SetGroupAdminRequestDTO, UpdateGroupNameRequestDTO } from 'src/app/models/chats-request';
+import { ChatResponseModel, ChatResponse, CreateChatResponseModel, AddUserToChatResponseModel, RemoveUserFromChatResponseModel, DeleteChatResponseModel, LeaveChatResponseModel, ManageGroupAdminResponseModel, UpdateGroupNameResponseModel, GetChatMembersResponseModel } from 'src/app/features/chat/models/chats-response';
+import { AddUserRequestDTO, CreateChatRequestDTO, RemoveUserRequestDTO, SetGroupAdminRequestDTO, UpdateGroupNameRequestDTO } from 'src/app/features/chat/models/chats-request';
 
 
 @Injectable({

@@ -9,11 +9,17 @@ import { AppComponent } from './app.component';
 import { AuthenticateModule } from './features/authenticate/authenticate.module';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
 import { ChatsComponent } from './features/chat/chats/chats.component';
+import { FriendListComponent } from './features/friendship/friend-list/friend-list.component';
+import { FriendRequestComponent } from './features/friendship/friend-request/friend-request.component';
+import { AddFriendComponent } from './features/friendship/add-friend/add-friend.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    ChatsComponent
+    ChatsComponent,
+    FriendListComponent,
+    FriendRequestComponent,
+    AddFriendComponent
   ],
   imports: [
     BrowserModule,

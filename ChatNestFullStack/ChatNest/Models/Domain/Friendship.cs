@@ -13,6 +13,7 @@ namespace ChatNest.Models.Domain
 
         public class FriendResponse
         {
+            public Guid FriendID { get; set; }
             public string FriendName { get; set; }
             public string FriendMail { get; set; }
             public DateTime createdAt { get; set; }
@@ -24,6 +25,7 @@ namespace ChatNest.Models.Domain
         public class FriendRequestResponse
         {
             public Guid? RequesterID { get; set; } // Populated only when direction = 'received'; null when direction = 'sent'
+            public Guid? ReceiverID { get; set; } // Populated only when direction = 'sent'; null when direction = 'received'
             public string Name { get; set; }
             public string Email { get; set; }
             public string FriendShipStatus { get; set; }

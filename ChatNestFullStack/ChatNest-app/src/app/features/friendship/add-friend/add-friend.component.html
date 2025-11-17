@@ -1,0 +1,18 @@
+<div class="add-friend-page">
+
+  <!-- Header / Navbar -->
+  <div class="chat-header">
+    <h3 class="chat-title">Add a Friend</h3>
+    <div class="header-actions">
+      <button class="header-btn" routerLink="/friendship/list">👥 My Friends</button>
+      <button class="header-btn" routerLink="/chats">💬 Chats</button>
+    </div>
+  </div>
+
+  <!-- Add Friend Form -->
+  <div class="add-friend-container">
+    <input [(ngModel)]="friendEmail" placeholder="Enter friend email" />
+    <button (click)="SendFriendRequest()">➕ Send Request</button>
+  </div>
+
+</div>

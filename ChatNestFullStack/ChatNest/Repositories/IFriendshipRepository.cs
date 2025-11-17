@@ -10,6 +10,6 @@ namespace ChatNest.Repositories
         Task<FriendshipStatusResponseModel> CheckFriendshipStatusAsync(Guid userId, Guid targetUserId);
         Task<SendFriendRequestResponseModel> SendFriendRequestAsync(Guid requesterId, string receiverEmail);
         Task<RemoveFriendResponseModel> RemoveFriendAsync(Guid userId, Guid friendId);
-        Task<ManageFriendRequestResponseModel> ManageFriendRequestAsync(Guid userId, Guid requesterId, string action);
+        Task<ManageFriendRequestResponseModel> ManageFriendRequestAsync(Guid clientUserID, Guid otherUserID, string action);
     }
 }

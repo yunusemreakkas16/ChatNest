@@ -1,9 +1,22 @@
-<div class="chat-list">
-  <div *ngFor="let chat of chats" class="chat-item" (click)="openChat(chat)">
-    <div class="chat-header">
-      <div class="chat-name">{{ chat.displayName }}</div>
-      <div class="chat-timestamp">{{ chat.lastMessageDate | date:'short' }}</div>
+<div class="chat-page">
+
+  <!-- Header -->
+  <div class="chat-header">
+    <h3 class="chat-title">Chats</h3>
+    <div class="header-actions">
+      <button class="header-btn" routerLink="/friendship/list">👥 Friends</button>
+      <button class="header-btn" routerLink="/friendship/requests">📩 Requests</button>
     </div>
-    <div class="chat-preview">{{ chat.lastMessageContent }}</div>
+  </div>
+
+  <!-- Chat List -->
+  <div class="chat-list">
+    <div *ngFor="let chat of chats" class="chat-item" (click)="openChat(chat)">
+      <div class="chat-item-header">
+        <div class="chat-name">{{ chat.displayName }}</div>
+        <div class="chat-timestamp">{{ chat.lastMessageDate | date:'short' }}</div>
+      </div>
+      <div class="chat-preview">{{ chat.lastMessageContent }}</div>
+    </div>
   </div>
 </div>

@@ -1,0 +1,56 @@
+<div class="friend-request-page">
+
+  <!-- Header -->
+  <div class="chat-header">
+    <h3 class="chat-title">Friend Requests</h3>
+    <div class="header-actions">
+      <button class="header-btn" routerLink="/friendship/list">👥 Friends</button>
+      <button class="header-btn" routerLink="/chats">💬 Chats</button>
+    </div>
+  </div>
+
+  <!-- Tab Indicator -->
+  <div class="tab-bar">
+    <button [class.active]="activeTab === 'Received'" (click)="switchTab('Received')">
+      📥 Received
+    </button>
+    <button [class.active]="activeTab === 'Sent'" (click)="switchTab('Sent')">
+      📤 Sent
+    </button>
+  </div>
+
+  <!-- Requests List -->
+  <div class="request-list">
+    <div *ngIf="requests.length === 0" class="empty-message">
+      No {{ activeTab }} requests.
+    </div>
+
+    <div *ngFor="let req of requests" class="request-item">
+      <div class="request-info">
+        <div class="request-name">{{ req.name }}</div>
+        <div class="request-email">{{ req.email }}</div>
+        <div class="request-status">Status: {{ req.friendShipStatus }}</div>
+      </div>
+
+      <div class="request-actions">
+        <!-- Accept, Reject for Recieved -->
+        <button *ngIf="activeTab === 'Received' && req.requesterID"
+                (click)="AcceptRequestAsync(req.requesterID!)"
+                class="accept-btn">Accept
+        </button>
+        
+        <button *ngIf="activeTab === 'Received' && req.requesterID"
+                (click)="RejectRequestAsync(req.requesterID!)"
+                class="reject-btn">Reject
+        </button>
+                
+        <!-- Cancel for Sent -->
+        <button *ngIf="activeTab === 'Sent'"
+                (click)="CancelRequestAsync(req.receiverID!)"
+                class="cancel-btn">Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+</div>

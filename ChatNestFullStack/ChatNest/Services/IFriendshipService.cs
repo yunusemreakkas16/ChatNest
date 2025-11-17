@@ -9,7 +9,8 @@ namespace ChatNest.Services
         public enum FriendRequestAction
         {
             Accept,
-            Reject
+            Reject,
+            Cancel
         }
 
         [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -21,7 +22,7 @@ namespace ChatNest.Services
 
         Task<SendFriendRequestResponseModel> SendFriendRequestAsync(Guid requesterId, string receiverEmail);
         Task<FriendRequestListResponseModel> GetFriendRequestsAsync(Guid userId, FriendRequestDirection direction);
-        Task<ManageFriendRequestResponseModel> RespondToFriendRequestAsync(Guid userId, Guid requesterId, FriendRequestAction action);
+        Task<ManageFriendRequestResponseModel> ManageFriendRequestAsync(Guid userId, Guid requesterId, FriendRequestAction action);
         Task<FriendListResponseModel> GetFriendsAsync(Guid userId);
         Task<RemoveFriendResponseModel> RemoveFriendAsync(Guid userId, Guid friendId);
         Task<FriendshipStatusResponseModel> GetFriendshipStatusAsync(Guid userId, Guid targetUserId);

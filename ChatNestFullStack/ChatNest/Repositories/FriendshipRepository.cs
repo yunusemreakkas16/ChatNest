@@ -57,12 +57,7 @@ namespace ChatNest.Repositories
 
         public async Task<FriendListResponseModel> GetFriendListAsync(Guid userId)
         {
-            var response = new FriendListResponseModel
-            {
-                Friends = new List<FriendResponse>(),
-                MessageID = 0,
-                MessageDescription = string.Empty
-            };
+            var response = new FriendListResponseModel();
 
             try
             {
@@ -135,7 +130,7 @@ namespace ChatNest.Repositories
 
         }
 
-        public async Task<ManageFriendRequestResponseModel> ManageFriendRequestAsync(Guid userId, Guid requesterId, string action)
+        public async Task<ManageFriendRequestResponseModel> ManageFriendRequestAsync(Guid clientUserID, Guid otherUserID, string action)
         {
             var response = new ManageFriendRequestResponseModel
             {
@@ -147,8 +142,8 @@ namespace ChatNest.Repositories
                 using(var connection = new SqlConnection(configuration.GetConnectionString("ChatNestConnectionString")))
                 {
                     var parameters = new DynamicParameters();
-                    parameters.Add("@receiverID", userId, DbType.Guid);
-                    parameters.Add("@requesterID", requesterId, DbType.Guid);
+                    parameters.Add("@clientUserID", clientUserID, DbType.Guid);
+                    parameters.Add("@otherUserID", otherUserID, DbType.Guid);
                     parameters.Add("@action", action, DbType.String);
                     parameters.Add("@messageID", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     parameters.Add("@messageDescription", dbType: DbType.String, size: 255, direction: ParameterDirection.Output);

@@ -1,7 +1,7 @@
 import { Component, OnInit} from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from 'src/app/services/auth.service';
+import { AuthService } from 'src/app/features/authenticate/services/auth.service';
 import { from } from 'rxjs';
 
 @Component({
@@ -33,7 +33,6 @@ constructor(
         next: (res) => {
           localStorage.setItem('accessToken', res.accessToken); // Store JWT token
           localStorage.setItem('refreshToken', res.refreshToken);
-          alert(res.messageDescription); // Log in success message
           this.router.navigate(['/chats']); // Return to home page
         },
         error: (err) => {

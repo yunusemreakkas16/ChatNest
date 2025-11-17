@@ -1,4 +1,4 @@
-import { BaseResponse } from './base-response';
+import { BaseResponse } from '../../../base-response-model/base-response';
 
 export interface SendMessageResponseModel extends BaseResponse {}
 export interface DeleteMessageResponseModel extends BaseResponse {}
