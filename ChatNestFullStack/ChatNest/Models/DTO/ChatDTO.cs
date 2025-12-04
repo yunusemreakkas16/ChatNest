@@ -14,6 +14,7 @@ namespace ChatNest.Models.DTO
         public Guid CreatedBy { get; set; }
         public List<Guid>? ParticipantIDs { get; set; } // For group chat, this is a list of user IDs to add to the chat
         public Guid? TargetUserID { get; set; } // for 1 to 1 chat
+        public List<string>? TargetEmails { get; set; } // for email based user identification
     }
     public class AddUserRequestDTO
     {
@@ -43,5 +44,4 @@ namespace ChatNest.Models.DTO
         public Guid UserID { get; set; } // The user who is updating the group name
         public string NewName { get; set; } // The new name for the group chat
     }
-
 }

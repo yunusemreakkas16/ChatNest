@@ -75,3 +75,24 @@
 .header-btn:hover {
   background: #45a049;
 }
+
+.status-banner {
+  margin: 12px 0;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 0.9em;
+  font-weight: 500;
+  background-color: #f4f4f4;
+  color: #444;
+  border: 1px solid #ccc;
+}
+
+.success-message::before {
+  content: '✔ ';
+  color: #4caf50;
+}
+
+.error-message::before {
+  content: '⚠ ';
+  color: #ff9800;
+}

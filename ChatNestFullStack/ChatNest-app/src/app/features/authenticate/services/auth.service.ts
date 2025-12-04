@@ -80,7 +80,7 @@ export class AuthService {
     return this.http.post(`${environment.apiUrl}/api/User/AddUser`, data);
   }
 
-  getUserId(): string {
+  getUserID(): string {
     const token = localStorage.getItem('accessToken');
     if (!token) return '';
 

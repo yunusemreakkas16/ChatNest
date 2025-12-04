@@ -55,22 +55,23 @@ namespace ChatNest.Services
         public async Task<(BaseResponse baseResponse, string AccessToken, string RefreshToken)> LogInAsync(LoginRequestDTO loginRequestDTO, string userAgent, string ipAddress)
         {
             var baseResponse = new BaseResponse();
-            var EmailResponse = new GetIDByEmailRequestDto
+
+            var EmailResponse = new GetIDsByEmailRequestsDto
             {
-                Email = loginRequestDTO.Email
+                Email = new List<string> { loginRequestDTO.Email }
             };
 
-            var UserIDResponse = await userService.GetUserByEmailAsync(EmailResponse);
+            var UserIDResponse = await userService.GetUsersByEmailsAsync(EmailResponse);
 
-            if (UserIDResponse.MessageID == -1)
+            if (UserIDResponse.MessageID != 1 || UserIDResponse.UserIDResponse == null || !UserIDResponse.UserIDResponse.Any())
             {
                 baseResponse.MessageID = -1;
                 baseResponse.MessageDescription = "User not found with given email.";
                 return (baseResponse, null, null);
-
             }
 
-            var UserID = UserIDResponse.UserIDResponse.UserID;
+            var UserID = UserIDResponse.UserIDResponse.First().UserID;
+
 
             var userParam = new UserParamModel
             {

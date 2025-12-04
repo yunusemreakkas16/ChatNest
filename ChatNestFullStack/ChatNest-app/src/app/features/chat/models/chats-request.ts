@@ -5,6 +5,7 @@ export interface CreateChatRequestDTO {
   createdBy: string;
   participantIDs?: string[];
   targetUserID?: string;
+  targetEmails?: string[];
 }
 
 export interface AddUserRequestDTO {

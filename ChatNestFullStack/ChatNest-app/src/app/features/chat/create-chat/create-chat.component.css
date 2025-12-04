@@ -1,4 +1,4 @@
-.friend-page {
+.create-chat-page {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -35,19 +35,38 @@
   padding: 6px 12px;
   color: #fff;
   cursor: pointer;
-  transition: background 0.2s, transform 0.05s;
   font-size: 0.9rem;
 }
 .header-btn:hover { background: rgba(255,255,255,0.2); }
-.header-btn:active { transform: scale(0.96); }
 
-.friend-list {
+.tab-bar {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+
+.tab-bar input[type="text"] {
+  flex: 1;
+  padding: 6px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+}
+
+.request-list {
   flex: 1;
   overflow-y: auto;
   padding: 4px 2px 8px;
 }
 
-.friend-item {
+.empty-message {
+  text-align: center;
+  color: #777;
+  font-style: italic;
+  margin-top: 20px;
+}
+
+.request-item {
   background: #fff;
   border-radius: 10px;
   padding: 10px 12px;
@@ -58,56 +77,35 @@
   align-items: center;
 }
 
-.friend-info {
+.request-info {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.friend-name {
+.request-name {
   font-weight: 600;
   color: #333;
 }
 
-.friend-mail {
+.request-email {
   font-size: 0.9rem;
   color: #555;
 }
 
-.friend-date {
-  font-size: 0.8rem;
-  color: #888;
-}
-
-.remove-btn {
-  background-color: #e53935;
+.request-actions button {
+  background-color: #666;
   color: #fff;
   border: none;
   border-radius: 6px;
   padding: 6px 12px;
   cursor: pointer;
-  transition: background 0.2s, transform 0.05s;
 }
-.remove-btn:hover { background-color: #c62828; }
-.remove-btn:active { transform: scale(0.96); }
-
-.status-banner {
-  margin: 12px 0;
-  padding: 10px 14px;
-  border-radius: 6px;
-  font-size: 0.9em;
-  font-weight: 500;
-  background-color: #f4f4f4;
-  color: #444;
-  border: 1px solid #ccc;
+.request-actions button:hover {
+  background-color: #0056b3;
 }
-
-.success-message::before {
-  content: '✔ ';
-  color: #4caf50;
-}
-
-.error-message::before {
-  content: '⚠ ';
-  color: #ff9800;
+.error-message {
+  color: red;
+  font-size: 0.85em;
+  margin-top: 4px;
 }

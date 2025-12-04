@@ -24,18 +24,22 @@ namespace ChatNest.Controllers
         [Route("CreateChat")]
         public async Task<ActionResult<CreateChatResponseModel>> CreateChatAsync([FromBody] CreateChatRequestDTO createChatRequestDTO)
         {
+            if (createChatRequestDTO == null)
+                return BadRequest(new { messageID = -100, messageDescription = "Request body is required." });
+
             var response = await chatService.CreateChatAsync(createChatRequestDTO);
 
             return response.MessageID switch
             {
                 1 => Ok(response),
                 -1 => NotFound(response),
-                -2 or -3 or -10 or -11 => BadRequest(response),
+                -2 or -3 or -10 or -11 or -12 => BadRequest(response),
                 -4 or -6 => Conflict(response),
                 -99 => StatusCode(500, response),
                 _ => BadRequest(response)
             };
         }
+
 
         [Authorize]
         [HttpPost]

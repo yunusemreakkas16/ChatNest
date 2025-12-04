@@ -9,6 +9,13 @@
     </div>
   </div>
 
+  <!-- Status Message -->
+  <div *ngIf="statusMessage"
+       [ngClass]="statusType === 'success' ? 'success-message' : 'error-message'"
+       class="status-banner">
+    {{ statusMessage }}
+  </div>
+
   <!-- Chat List -->
   <div class="chat-list">
     <div *ngFor="let chat of chats" class="chat-item" (click)="openChat(chat)">
@@ -19,4 +26,9 @@
       <div class="chat-preview">{{ chat.lastMessageContent }}</div>
     </div>
   </div>
+
+  <!-- Floating Create Chat Button -->
+  <button class="floating-create-btn" routerLink="/chats/create-chat">
+    ➕
+  </button>
 </div>

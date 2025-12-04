@@ -1,0 +1,69 @@
+<div class="create-chat-page">
+  <!-- Header -->
+  <div class="chat-header">
+    <h3 class="chat-title">Create Chat</h3>
+    <div class="header-actions">
+      <button class="header-btn" routerLink="/friendship/list">👥 Friends</button>
+      <button class="header-btn" routerLink="/chats">💬 Chats</button>
+    </div>
+  </div>
+
+  <!-- Chat Type -->
+  <div class="tab-bar">
+    <label>
+      <input type="checkbox" [(ngModel)]="isGroupChat" /> Group Chat
+    </label>
+    <input type="text" [(ngModel)]="groupName" [disabled]="!isGroupChat" placeholder="Group Name" />
+  </div>
+
+  <!-- Friend List -->
+  <div class="request-list">
+    <div *ngIf="friendList.length === 0" class="empty-message">No friends available.</div>
+
+    <div *ngFor="let friend of friendList" class="request-item">
+      <div class="request-info">
+        <div class="request-name">{{ friend.friendName }}</div>
+        <div class="request-email">{{ friend.friendMail }}</div>
+      </div>
+      <div class="request-actions">
+        <button *ngIf="!isGroupChat" (click)="CreateChat(false, [friend.friendID], [], '')">Start Chat</button>
+        <button *ngIf="isGroupChat" (click)="addFriendToGroup(friend.friendID)">Add to Group</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Email Input -->
+  <div class="request-list">
+    <h4 style="margin-top: 16px;">Add Emails</h4>
+    <div class="request-item">
+      <input type="email" [(ngModel)]="newEmail" placeholder="Enter Email" style="flex: 1; margin-right: 8px;" />
+      <button (click)="addEmail()">Add</button>
+    </div>
+    <div *ngIf="emailError" class="error-message">{{ emailError }}</div>
+
+  </div>
+
+  <!-- Selected Participants -->
+  <div *ngIf="isGroupChat && (selectedFriends.length || enteredMails.length)" class="request-list">
+    <h4>Selected Participants</h4>
+
+    <div *ngFor="let friend of selectedFriends" class="request-item">
+      <div class="request-info">
+        <div class="request-name">{{ friend.friendName }}</div>
+        <div class="request-email">{{ friend.friendMail }}</div>
+      </div>
+      <button (click)="removeFriend(friend.friendID)">Remove</button>
+    </div>
+
+    <div *ngFor="let mail of enteredMails" class="request-item">
+      <div class="request-info">
+        <div class="request-email">{{ mail }}</div>
+      </div>
+      <button (click)="removeEmail(mail)">Remove</button>
+    </div>
+
+    <div class="request-actions" style="margin-top: 12px;">
+      <button (click)="startGroupChat()">Start Group Chat</button>
+    </div>
+  </div>
+</div>

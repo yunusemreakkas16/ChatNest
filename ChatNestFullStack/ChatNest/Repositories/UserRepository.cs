@@ -288,42 +288,28 @@ namespace ChatNest.Repositories
             return response;
         }
 
-        public async Task<UserIDResponseModel> GetUserByEmailAsync(GetIDByEmailRequestDto getIDByEmailRequestDto)
+        public async Task<UserIDResponseModel> GetUserIDsByMailsAsync(GetIDsByEmailRequestsDto Emails)
         {
             var response = new UserIDResponseModel();
-
             try
             {
                 using (var connection = new SqlConnection(configuration.GetConnectionString("ChatNestConnectionString")))
                 {
                     var parameters = new DynamicParameters();
+                    parameters.Add("@Emails", string.Join(",", Emails.Email));
+                    parameters.Add("@messageID", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    parameters.Add("@messageDescription", dbType: DbType.String, direction: ParameterDirection.Output, size: 255);
 
-                    parameters.Add("@Email", getIDByEmailRequestDto.Email);
-                    parameters.Add("@UserId", dbType: DbType.Guid, direction: ParameterDirection.Output);
+                    var userIDs = await connection.QueryAsync<UserIDResponse>("usp_FindUserIDsByEmails", parameters, commandType: CommandType.StoredProcedure);
 
-                    await connection.ExecuteAsync("usp_FindUserIdByEmail", parameters, commandType: CommandType.StoredProcedure);
+                    response.UserIDResponse = userIDs.ToList();
 
-                    var userIdNullable = parameters.Get<Guid?>("@UserId");
-
-                    if (userIdNullable == null || userIdNullable == Guid.Empty)
-                    {
-                        response.MessageID = -1;
-                        response.MessageDescription = "No user found with the provided email.";
-                        response.UserIDResponse = null;
-                    }
-                    else
-                    {
-                        response.MessageID = 1;
-                        response.MessageDescription = "User found successfully.";
-                        response.UserIDResponse = new UserIDResponse { UserID = userIdNullable.Value };
-                    }
-
+                    response.MessageID = parameters.Get<int>("@messageID");
+                    response.MessageDescription = parameters.Get<string>("@messageDescription");
                 }
             }
             catch (SqlException sqlEx)
             {
-                response.UserIDResponse = null;
-
                 throw new Exception($"Database error: {sqlEx.Message}");
             }
             catch (Exception ex)

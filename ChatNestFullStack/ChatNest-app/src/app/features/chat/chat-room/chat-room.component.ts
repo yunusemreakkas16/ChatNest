@@ -5,6 +5,7 @@ import { AuthService } from 'src/app/features/authenticate/services/auth.service
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MessageViewModel } from 'src/app/features/chat/models/view-models/message-view';
 import { ChatService } from '../services/chat.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-chat-room',
@@ -19,6 +20,9 @@ export class ChatRoomComponent implements OnInit {
   groupName: string = '';
   messages: MessageViewModel[] = [];
 
+  statusMessage: string = '';
+  statusType: 'success' | 'error' | '' = '';
+
   constructor(
     private route: ActivatedRoute,
     private messageService: MessageService, 
@@ -29,7 +33,7 @@ export class ChatRoomComponent implements OnInit {
 
   ngOnInit(): void {
     this.chatId = this.route.snapshot.paramMap.get('id')!;
-    this.userId = this.authService.getUserId();
+    this.userId = this.authService.getUserID();
 
     this.messageForm = this.fb.group({
       content: ['', [Validators.required, Validators.maxLength(10000)]]
@@ -41,7 +45,11 @@ export class ChatRoomComponent implements OnInit {
         const chat = res.chats.find(c => c.chatID === this.chatId);
         this.groupName = chat?.displayName ?? '';
       },
-      error: (err) => console.error('Error fetching chat info:', err)
+      error: (err: HttpErrorResponse) => {
+        console.error('Error fetching chat info:', err);
+        this.statusMessage = err.error?.messageDescription || 'Failed to load chat info.';
+        this.statusType = 'error';
+      }
     });
 
     // Load messages
@@ -68,7 +76,11 @@ export class ChatRoomComponent implements OnInit {
           }))
         ];
       },
-      error: (err) => console.error('Error fetching messages:', err)
+      error: (err: HttpErrorResponse) => {
+        console.error('Error fetching messages:', err);
+        this.statusMessage = err.error?.messageDescription || 'Failed to load messages.';
+        this.statusType = 'error';
+      }
     });
   }
 
@@ -96,9 +108,11 @@ export class ChatRoomComponent implements OnInit {
         tempMessage.status = 'sent';
         this.messageForm.reset();
       },
-      error: (err) => {
+      error: (err: HttpErrorResponse) => {
         tempMessage.status = 'failed';
         console.error('Error sending message:', err);
+        this.statusMessage = err.error?.messageDescription || 'Failed to send message.';
+        this.statusType = 'error';
       }
     });
   }
@@ -107,8 +121,14 @@ export class ChatRoomComponent implements OnInit {
     this.messageService.deleteMessage(messageID, this.userId).subscribe({
       next: () => {
         this.messages = this.messages.filter(m => m.messageID !== messageID);
+        this.statusMessage = 'Message deleted successfully.';
+        this.statusType = 'success';
       },
-      error: (err) => console.error('Error deleting message:', err)
+      error: (err: HttpErrorResponse) => {
+        console.error('Error deleting message:', err);
+        this.statusMessage = err.error?.messageDescription || 'Failed to delete message.';
+        this.statusType = 'error';
+      }
     });
   }
 }

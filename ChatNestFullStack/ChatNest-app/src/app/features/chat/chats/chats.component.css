@@ -84,3 +84,48 @@
   font-size: 0.95rem;
   color: #222;
 }
+
+.floating-create-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background-color: #555;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: background 0.2s, transform 0.1s;
+  z-index: 100;
+}
+
+.floating-create-btn:hover {
+  background-color: #333;
+}
+
+.floating-create-btn:active {
+  transform: scale(0.95);
+}
+
+.status-banner {
+  margin: 8px 0;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  background-color: #f4f4f4;
+  border: 1px solid #ccc;
+  color: #444;
+}
+
+.success-message::before {
+  content: "✔ ";
+  color: #4caf50;
+}
+
+.error-message::before {
+  content: "⚠ ";
+  color: #ff9800;
+}

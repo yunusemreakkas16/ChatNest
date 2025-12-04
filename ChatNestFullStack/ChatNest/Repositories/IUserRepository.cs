@@ -11,6 +11,6 @@ namespace ChatNest.Repositories
         Task<UserResponseModelDetailed> UpdateUserAsync(User user);
         Task<object> SoftDeleteUserAsync(UserParamModel userParam);
         Task<UserResponseModelDetailed> ReActivateUserAsync(UserParamModel userParam);
-        Task<UserIDResponseModel> GetUserByEmailAsync(GetIDByEmailRequestDto getIDByEmailRequestDto);
+        Task<UserIDResponseModel> GetUserIDsByMailsAsync(GetIDsByEmailRequestsDto emails);
     }
 }

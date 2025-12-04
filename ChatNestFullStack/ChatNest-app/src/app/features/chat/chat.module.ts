@@ -5,12 +5,14 @@ import { ChatRoutingModule } from './chat-routing.module';
 import { ChatRoomComponent } from './chat-room/chat-room.component';
 import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { GroupSettingsComponent } from './group-settings/group-settings.component';
+import { CreateChatComponent } from './create-chat/create-chat.component';
 
 
 @NgModule({
   declarations: [
     ChatRoomComponent,
-    GroupSettingsComponent
+    GroupSettingsComponent,
+    CreateChatComponent
   ],
   imports: [
     CommonModule,

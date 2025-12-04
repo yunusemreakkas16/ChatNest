@@ -65,7 +65,7 @@ namespace ChatNest.Models.Domain
 
     public class UserIDResponseModel : BaseResponse
     {
-        public UserIDResponse? UserIDResponse { get; set; }
+        public List<UserIDResponse>? UserIDResponse { get; set; }
     }
 
 

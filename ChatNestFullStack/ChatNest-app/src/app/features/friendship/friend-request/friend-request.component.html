@@ -11,17 +11,20 @@
 
   <!-- Tab Indicator -->
   <div class="tab-bar">
-    <button [class.active]="activeTab === 'Received'" (click)="switchTab('Received')">
-      📥 Received
-    </button>
-    <button [class.active]="activeTab === 'Sent'" (click)="switchTab('Sent')">
-      📤 Sent
-    </button>
+    <button [class.active]="activeTab === 'Received'" (click)="switchTab('Received')">📥 Received</button>
+    <button [class.active]="activeTab === 'Sent'" (click)="switchTab('Sent')">📤 Sent</button>
+  </div>
+
+  <!-- Status Message -->
+  <div *ngIf="statusMessage"
+       [ngClass]="statusType === 'success' ? 'success-message' : 'error-message'"
+       class="status-banner">
+    {{ statusMessage }}
   </div>
 
   <!-- Requests List -->
   <div class="request-list">
-    <div *ngIf="requests.length === 0" class="empty-message">
+    <div *ngIf="requests.length === 0 && !statusMessage" class="empty-message">
       No {{ activeTab }} requests.
     </div>
 
@@ -33,22 +36,19 @@
       </div>
 
       <div class="request-actions">
-        <!-- Accept, Reject for Recieved -->
+        <!-- Accept, Reject for Received -->
         <button *ngIf="activeTab === 'Received' && req.requesterID"
                 (click)="AcceptRequestAsync(req.requesterID!)"
-                class="accept-btn">Accept
-        </button>
-        
+                class="accept-btn">Accept</button>
+
         <button *ngIf="activeTab === 'Received' && req.requesterID"
                 (click)="RejectRequestAsync(req.requesterID!)"
-                class="reject-btn">Reject
-        </button>
-                
+                class="reject-btn">Reject</button>
+
         <!-- Cancel for Sent -->
         <button *ngIf="activeTab === 'Sent'"
                 (click)="CancelRequestAsync(req.receiverID!)"
-                class="cancel-btn">Cancel
-        </button>
+                class="cancel-btn">Cancel</button>
       </div>
     </div>
   </div>

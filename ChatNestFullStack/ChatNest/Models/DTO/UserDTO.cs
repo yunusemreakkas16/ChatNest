@@ -17,9 +17,9 @@ namespace ChatNest.Models.DTO
         public string PasswordHash { get; set; }   
     }
 
-    public class GetIDByEmailRequestDto
+    public class GetIDsByEmailRequestsDto
     {
-        public string Email { get; set; }
+        public List<string> Email { get; set; }
     }
 
 

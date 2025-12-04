@@ -9,9 +9,16 @@
     </div>
   </div>
 
+  <!-- Status Message -->
+  <div *ngIf="statusMessage"
+       [ngClass]="statusType === 'success' ? 'success-message' : 'error-message'"
+       class="status-banner">
+    {{ statusMessage }}
+  </div>
+
   <!-- Friend List -->
   <div class="friend-list">
-    <div *ngIf="friends.length === 0" class="empty-message">
+    <div *ngIf="friends.length === 0 && !statusMessage" class="empty-message">
       You don't have any friends yet.
     </div>
 

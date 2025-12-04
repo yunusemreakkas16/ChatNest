@@ -61,9 +61,21 @@ namespace ChatNest.Services
             return user;
         }
 
-        public async Task<UserIDResponseModel> GetUserByEmailAsync(GetIDByEmailRequestDto getIDByEmailRequestDto)
+        public async Task<UserIDResponseModel> GetUsersByEmailsAsync(GetIDsByEmailRequestsDto getIDByEmailRequestDto)
         {
-            return await userRepository.GetUserByEmailAsync(getIDByEmailRequestDto);
+            if (getIDByEmailRequestDto == null || getIDByEmailRequestDto.Email == null || !getIDByEmailRequestDto.Email.Any())
+            {
+                return new UserIDResponseModel
+                {
+                    MessageID = -2,
+                    MessageDescription = "Email list cannot be null or empty.",
+                    UserIDResponse = new List<UserIDResponse>()
+                };
+            }
+
+            var response = await userRepository.GetUserIDsByMailsAsync(getIDByEmailRequestDto);
+
+            return response;
         }
     }
 }

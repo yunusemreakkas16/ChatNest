@@ -7,18 +7,54 @@ namespace ChatNest.Services
     public class ChatService : IChatService
     {
         private readonly IChatRepository chatRepository;
+        private readonly IUserService userService;
 
-        public ChatService(IChatRepository chatRepository )
+        public ChatService(IChatRepository chatRepository, IUserService userService)
         {
             this.chatRepository = chatRepository;
+            this.userService = userService;
         }
 
         public async Task<CreateChatResponseModel> CreateChatAsync(CreateChatRequestDTO createChatRequestDTO)
         {
             if (createChatRequestDTO == null)
+                throw new ArgumentNullException(nameof(createChatRequestDTO));
+
+            // Email to UserID conversion
+            if (createChatRequestDTO.TargetEmails != null && createChatRequestDTO.TargetEmails.Any())
             {
-                throw new ArgumentNullException(nameof(createChatRequestDTO), "CreateChatRequestDTO cannot be null");
+                var emailRequest = new GetIDsByEmailRequestsDto { Email = createChatRequestDTO.TargetEmails };
+                var userIdsResponse = await userService.GetUsersByEmailsAsync(emailRequest);
+
+                if (createChatRequestDTO.IsGroup)
+                {
+                    createChatRequestDTO.ParticipantIDs = (createChatRequestDTO.ParticipantIDs ?? new List<Guid>())
+                        .Concat(userIdsResponse.UserIDResponse.Select(u => u.UserID))
+                        .Distinct()
+                        .ToList();
+                }
+                else
+                {
+                    createChatRequestDTO.TargetUserID = userIdsResponse.UserIDResponse.First().UserID;
+                }
             }
+
+            if (!createChatRequestDTO.IsGroup)
+            {
+                if (createChatRequestDTO.TargetUserID == null)
+                    return new CreateChatResponseModel { MessageID = -1, MessageDescription = "Target user must be provided for 1-on-1 chat." };
+
+                if (createChatRequestDTO.ParticipantIDs != null && createChatRequestDTO.ParticipantIDs.Any())
+                    return new CreateChatResponseModel { MessageID = -11, MessageDescription = "1-on-1 chat cannot have participantIDs." };
+            }
+            else
+            {
+                if (createChatRequestDTO.ParticipantIDs == null || !createChatRequestDTO.ParticipantIDs.Any())
+                    return new CreateChatResponseModel { MessageID = -12, MessageDescription = "Group chat must have at least one participant." };
+            }
+
+
+
             var chat = new Chat
             {
                 isGroup = createChatRequestDTO.IsGroup,

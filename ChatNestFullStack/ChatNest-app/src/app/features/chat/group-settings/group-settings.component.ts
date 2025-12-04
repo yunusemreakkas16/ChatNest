@@ -29,7 +29,7 @@ export class GroupSettingsComponent implements OnInit {
   ngOnInit(): void {
     this.chatID = this.route.snapshot.paramMap.get('id')!;
     this.currentUserID = localStorage.getItem('userID') ?? '';
-    this.currentUserID = this.authService.getUserId() || '';
+    this.currentUserID = this.authService.getUserID() || '';
     this.loadMembers();
 
   }

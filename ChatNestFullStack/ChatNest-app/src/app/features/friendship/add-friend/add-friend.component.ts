@@ -10,47 +10,57 @@ import { SendFriendRequestResponseModel } from '../models/friendship';
 })
 export class AddFriendComponent {
   friendEmail: string = '';
-  userId!: string
+  userId!: string;
+
+  statusMessage: string = '';
+  statusType: 'success' | 'error' | '' = '';
 
   constructor(
     private authService: AuthService,
     private FriendshipService: FriendshipService
   ) {}
 
-    ngOnInit(): void {
-    this.userId = this.authService.getUserId(); // burada set et
+  ngOnInit(): void {
+    this.userId = this.authService.getUserID();
   }
 
-
   SendFriendRequest(): void {
-    if (!this.friendEmail) {
-      alert('Please enter a valid email address.');
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!this.friendEmail || !emailRegex.test(this.friendEmail)) {
+      this.statusMessage = 'Please enter a valid email address.';
+      this.statusType = 'error';
       return;
     }
 
     this.FriendshipService.SendFriendRequestAsync(this.userId, this.friendEmail).subscribe({
       next: (response: SendFriendRequestResponseModel) => {
-      if (response.messageID >= 1 && response.messageID <= 4) {
-        const successMessages = {
-          1: 'Friend request sent successfully!',
-          2: 'Friend request re-sent from previously cancelled request!',
-          3: 'Friend request re-sent from previously rejected request!', 
-          4: 'Friend request re-sent from previously removed request!'
-        };
+        if (response.messageID >= 1 && response.messageID <= 4) {
+          const successMessages: Record<number, string> = {
+            1: 'Friend request sent successfully!',
+            2: 'Friend request re-sent from previously cancelled request!',
+            3: 'Friend request re-sent from previously rejected request!',
+            4: 'Friend request re-sent from previously removed request!'
+          };
 
-        alert(successMessages[response.messageID as keyof typeof successMessages]);
-        this.friendEmail = '';
-      }
-        else {
-          alert('Failed to send friend request. ' + response.messageDescription);
+          this.statusMessage = successMessages[response.messageID];
+          this.statusType = 'success';
+          this.friendEmail = '';
+        } else {
+          this.statusMessage = 'Failed to send friend request. ' + response.messageDescription;
+          this.statusType = 'error';
         }
       },
       error: (error) => {
         console.error('Error sending friend request:', error);
-        alert('An error occurred while sending the friend request.');
+        if (error.error && error.error.messageDescription) {
+          this.statusMessage = error.error.messageDescription;
+        } else {
+          // fallback
+          this.statusMessage = 'Network error: ' + error.message;
+        }
+        this.statusType = 'error';
       }
     });
-
   }
-
 }
