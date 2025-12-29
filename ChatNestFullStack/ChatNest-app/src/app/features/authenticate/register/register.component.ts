@@ -37,9 +37,9 @@ export class RegisterComponent implements OnInit {
     const { username, email, password } = this.registerForm.value;
 
     const dto = {
-      Username: username,
-      Email: email,
-      PasswordHash: password
+      username: username,
+      email: email,
+      passwordHash: password
     };
 
     this.authService.register(dto).subscribe({

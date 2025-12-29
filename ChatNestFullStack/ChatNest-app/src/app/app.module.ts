@@ -8,25 +8,23 @@ import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { AppComponent } from './app.component';
 import { AuthenticateModule } from './features/authenticate/authenticate.module';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
-import { ChatsComponent } from './features/chat/chats/chats.component';
-import { FriendListComponent } from './features/friendship/friend-list/friend-list.component';
-import { FriendRequestComponent } from './features/friendship/friend-request/friend-request.component';
-import { AddFriendComponent } from './features/friendship/add-friend/add-friend.component';
+import { UserModule } from './features/user/user.module';
+import { FriendshipModule } from './features/friendship/friendship.module';
+import { ChatModule } from './features/chat/chat.module';
 
 @NgModule({
   declarations: [
-    AppComponent,
-    ChatsComponent,
-    FriendListComponent,
-    FriendRequestComponent,
-    AddFriendComponent
+    AppComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     AuthenticateModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    UserModule,
+    FriendshipModule,
+    ChatModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor , multi: true }

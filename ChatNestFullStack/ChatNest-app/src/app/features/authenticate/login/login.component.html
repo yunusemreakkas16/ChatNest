@@ -1,8 +1,36 @@
-<form [formGroup]="logInForm" (ngSubmit)="onSubmit()">
-  <input formControlName="email" placeholder="Email" />
-  <input formControlName="password" type="password" placeholder="Password" />
-  <button type="submit">Login</button>
-</form>
+<div class="auth-page">
+  <div>
+    <!-- Header -->
+    <div class="auth-header">
+      ChatNestApp Login
+    </div>
 
-<button type="button" (click)="goToRegister()">Register</button>
+    <!-- Card -->
+    <div class="auth-card">
+      <form [formGroup]="logInForm" (ngSubmit)="onSubmit()">
+        <input formControlName="email" placeholder="Email" />
+        <input formControlName="password" type="password" placeholder="Password" />
 
+        <div class="auth-actions">
+          <button type="submit" class="login-btn">Login</button>
+          <button type="button" (click)="goToRegister()" class="register-btn">Register</button>
+        </div>
+      </form>
+
+      <!-- Error Banner -->
+      <div *ngIf="errorMessage && errorCode !== 2" class="error-banner">
+        <strong *ngIf="errorCode">Error {{ errorCode }}:</strong> {{ errorMessage }}
+      </div>
+
+      <!-- Deleted User Reactivation Box -->
+      <div *ngIf="errorCode === 2" class="reactivate-box">
+        <p>{{ errorMessage }}</p>
+        <label class="reactivate-option">
+          <input type="checkbox" [(ngModel)]="reactivateIfDeleted" />
+          Reactivate my account
+        </label>
+        <button (click)="retryLogin()" class="reactivate-btn">Retry Login</button>
+      </div>
+    </div>
+  </div>
+</div>

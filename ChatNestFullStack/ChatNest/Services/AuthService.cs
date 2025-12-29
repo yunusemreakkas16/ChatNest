@@ -5,7 +5,6 @@ using ChatNest.Models.DTO;
 using ChatNest.Models.DTO.ChatNest.Models.DTO;
 using ChatNest.Repositories;
 using ChatNest.Utils;
-using Newtonsoft.Json.Linq;
 
 namespace ChatNest.Services
 {
@@ -56,6 +55,7 @@ namespace ChatNest.Services
         {
             var baseResponse = new BaseResponse();
 
+            // 1. Normal akış: aktif kullanıcı arama
             var EmailResponse = new GetIDsByEmailRequestsDto
             {
                 Email = new List<string> { loginRequestDTO.Email }
@@ -65,40 +65,75 @@ namespace ChatNest.Services
 
             if (UserIDResponse.MessageID != 1 || UserIDResponse.UserIDResponse == null || !UserIDResponse.UserIDResponse.Any())
             {
+                // Pasif kullanıcı kontrolü
+                var fallbackResponse = await userService.GetUserByEmailFailedAsync(loginRequestDTO.Email);
+
+                if (fallbackResponse.MessageID == 2 && fallbackResponse.UserIDResponse?.Any() == true)
+                {
+                    var userId = fallbackResponse.UserIDResponse.First().UserID;
+                    var userParam = new UserParamModel { UserID = userId };
+
+                    if (loginRequestDTO.ReactivateIfDeleted)
+                    {
+                        // Reaktivasyon
+                        var reactivateResponse = await userService.ReActivateUserAsync(userParam);
+
+                        if (reactivateResponse.MessageID == 1)
+                        {
+                            // Reaktivasyon başarılı → login akışına devam
+                            return await ContinueLoginAsync(userId, loginRequestDTO.Password, userAgent, ipAddress);
+                        }
+                    }
+
+                    baseResponse.MessageID = 2;
+                    baseResponse.MessageDescription = "User found but is deleted.";
+                    return (baseResponse, null, null);
+                }
+
                 baseResponse.MessageID = -1;
                 baseResponse.MessageDescription = "User not found with given email.";
                 return (baseResponse, null, null);
             }
 
             var UserID = UserIDResponse.UserIDResponse.First().UserID;
+            return await ContinueLoginAsync(UserID, loginRequestDTO.Password, userAgent, ipAddress);
+        }
 
 
-            var userParam = new UserParamModel
-            {
-                UserID = UserID
-            };
 
+        // Yardımcı metod: ana login akışı
+        public async Task<(BaseResponse baseResponse, string AccessToken, string RefreshToken)> ContinueLoginAsync(
+            Guid userId, string password, string userAgent, string ipAddress)
+        {
+            var baseResponse = new BaseResponse();
+
+            var userParam = new UserParamModel { UserID = userId };
             var UserDetailedResponseModel = await userService.GetUserDetailedAsync(userParam);
 
-            var isPasswordValid = PasswordHasher.VerifyPassword(loginRequestDTO.Password, UserDetailedResponseModel.User.UserPasswordHash);
-
-            if (isPasswordValid)
+            if (UserDetailedResponseModel.User == null)
             {
-                // Generate tokens
-                var (accessToken, refreshToken) = await GenerateTokensAsync(UserID, userAgent, ipAddress);
-
-                baseResponse.MessageID = 1;
-                baseResponse.MessageDescription = "Login successful.";
-
-                return (baseResponse, accessToken, refreshToken);
+                baseResponse.MessageID = -2;
+                baseResponse.MessageDescription = "User not found or inactive.";
+                return (baseResponse, null, null);
             }
-            else
+
+            var isPasswordValid = PasswordHasher.VerifyPassword(password, UserDetailedResponseModel.User.UserPasswordHash);
+
+            if (!isPasswordValid)
             {
                 baseResponse.MessageID = -1;
                 baseResponse.MessageDescription = "Invalid password.";
                 return (baseResponse, null, null);
             }
+
+            var (accessToken, refreshToken) = await GenerateTokensAsync(userId, userAgent, ipAddress);
+
+            baseResponse.MessageID = 1;
+            baseResponse.MessageDescription = "Login successful.";
+            return (baseResponse, accessToken, refreshToken);
         }
+
+
 
         public async Task<BaseResponse> LogOutAsync(string refreshToken)
         {

@@ -6,8 +6,15 @@
     <a [routerLink]="['/chats', chatID]" class="gs-back">← Back to chat</a>
   </div>
 
+  <!-- 🔴 Inline Feedback Banner -->
+  <div *ngIf="statusMessage" 
+       [ngClass]="statusType === 'success' ? 'success-banner' : 'error-banner'" 
+       class="status-banner">
+    {{ statusMessage }}
+  </div>
+
   <!-- Group name section -->
-  <section class="gs-card">
+  <section class="gs-card" *ngIf="isGroupChat">
     <div class="gs-row">
       <div class="gs-label">Group Name</div>
       <div class="gs-value">{{ groupName }}</div>
@@ -20,7 +27,7 @@
   </section>
 
   <!-- Members list -->
-  <section class="gs-card">
+  <section class="gs-card" *ngIf="isGroupChat">
     <div class="gs-section-title">Members</div>
 
     <ul class="gs-list">
@@ -30,22 +37,28 @@
           <span *ngIf="member.isAdmin" class="gs-badge">Admin</span>
         </div>
 
+        <!-- Admin fonksiyonları -->
         <div class="gs-actions" *ngIf="currentUserIsAdmin">
           <button *ngIf="!member.isAdmin" (click)="makeAdmin(member)">Make admin</button>
           <button class="danger" (click)="removeUser(member)">Remove</button>
         </div>
       </li>
     </ul>
-      <!-- Add user section -->
-  <div *ngIf="currentUserIsAdmin" class="gs-edit">
-    <input [(ngModel)]="newUserId" placeholder="Enter user ID to add" />
-    <button (click)="addUser(newUserId)">Add user</button>
-  </div>
+
+    <!-- Add user section -->
+    <div *ngIf="currentUserIsAdmin" class="gs-edit">
+      <input [(ngModel)]="newUserId" placeholder="Enter user ID to add" />
+      <button (click)="addUser(newUserId)">Add user</button>
+    </div>
   </section>
 
-  <!-- Delete, Leave Group -->
+  <!-- Delete / Leave -->
   <section class="gs-card gs-danger-zone">
-    <button *ngIf="currentUserIsAdmin" class="danger" (click)="deleteChat()">🗑 Delete Group</button>
-    <button class="danger" (click)="leaveChat()">🚪 Leave Group</button>
+    <!-- Grup chat için -->
+    <button *ngIf="isGroupChat && currentUserIsAdmin" class="danger" (click)="deleteChat()">🗑 Delete Group</button>
+    <button *ngIf="isGroupChat" class="danger" (click)="leaveChat()">🚪 Leave Group</button>
+
+    <!-- 1'e1 chat için -->
+    <button *ngIf="!isGroupChat" class="danger" (click)="deleteChat()">🗑 Delete Chat</button>
   </section>
 </div>

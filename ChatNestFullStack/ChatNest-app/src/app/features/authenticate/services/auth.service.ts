@@ -2,13 +2,18 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { UserService } from '../../user/services/user.service';
+import { CreateUserRequestDto, LoginRequestDto, LoginResponseDto, UserResponseModel } from '../../user/models/user';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AuthService {
 
-  constructor(private http: HttpClient) { }
+  constructor(
+    private http: HttpClient,
+    private userService: UserService
+  ) {}
 
   getAccessToken(): string | null {
     return localStorage.getItem('accessToken');
@@ -72,13 +77,15 @@ export class AuthService {
       );
   }
 
-  login(credentials: { email: string; password: string }): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/api/Auth/login`, credentials);
+  login(credentials: LoginRequestDto): Observable<LoginResponseDto> {
+    return this.http.post<LoginResponseDto>(`${environment.apiUrl}/api/Auth/login`, credentials);
   }
 
-  register(data: { Username: string; Email: string; PasswordHash: string }): Observable<any> {
-    return this.http.post(`${environment.apiUrl}/api/User/AddUser`, data);
+  register(data: CreateUserRequestDto): Observable<UserResponseModel> {
+    // Proxy: Delegate user creation to UserService
+    return this.userService.AddUser(data);
   }
+
 
   getUserID(): string {
     const token = localStorage.getItem('accessToken');

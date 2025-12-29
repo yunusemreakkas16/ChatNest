@@ -18,8 +18,10 @@ namespace ChatNest.Models.DTO
 
             [Required]
             [DataType(DataType.Password)]
-            [MinLength(8, ErrorMessage = "Password must be at least 6 characters long.")]
+            [MinLength(6, ErrorMessage = "Password must be at least 6 characters long.")]
             public string Password { get; set; }
+
+            public Boolean ReactivateIfDeleted { get; set; } = false;
         }
         public class LogoutRequestDTO
         {

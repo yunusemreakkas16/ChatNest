@@ -1,4 +1,5 @@
-﻿using ChatNest.Models.Domain;
+﻿using ChatNest.Models.Common;
+using ChatNest.Models.Domain;
 using ChatNest.Models.DTO;
 using ChatNest.Repositories;
 using ChatNest.Utils;
@@ -27,10 +28,6 @@ namespace ChatNest.Services
             return await userRepository.CreateUserAsync(user);
         }
 
-        public async Task<UserResponseModelList> GetUsersAsync()
-        {
-            return await userRepository.GetUsersAsync();
-        }
         public async Task<UserResponseModelDetailed> GetUserDetailedAsync(UserParamModel userParam)
         {
             return await userRepository.GetUserDetailedAsync(userParam);
@@ -38,20 +35,20 @@ namespace ChatNest.Services
 
         public async Task<UserResponseModelDetailed> UpdateUserAsync(UpdateUserRequestDto updateUserRequestDto)
         {
-            var hashedPassword = PasswordHasher.HashPassword(updateUserRequestDto.PasswordHash);
+            // Hash if value is not null or empty
+            string? hashedPassword = string.IsNullOrEmpty(updateUserRequestDto.PasswordHash)? null: PasswordHasher.HashPassword(updateUserRequestDto.PasswordHash);
 
             var user = new User
             {
                 userID = updateUserRequestDto.UserID,
-                username = updateUserRequestDto.Username,
-                email = updateUserRequestDto.Email,
-                passwordHash = hashedPassword
+                username = updateUserRequestDto.Username, // may be null
+                email = updateUserRequestDto.Email,       // may be null
+                passwordHash = hashedPassword             // may be null
             };
 
             return await userRepository.UpdateUserAsync(user);
-
         }
-        public async Task<object> SoftDeleteUserAsync(UserParamModel userParam)
+        public async Task<BaseResponse> SoftDeleteUserAsync(UserParamModel userParam)
         {
             return await userRepository.SoftDeleteUserAsync(userParam);
         }
@@ -76,6 +73,11 @@ namespace ChatNest.Services
             var response = await userRepository.GetUserIDsByMailsAsync(getIDByEmailRequestDto);
 
             return response;
+        }
+
+        public async Task<UserIDResponseModel> GetUserByEmailFailedAsync(string email)
+        {
+            return await userRepository.GetUserByEmailFailedAsync(email);
         }
     }
 }

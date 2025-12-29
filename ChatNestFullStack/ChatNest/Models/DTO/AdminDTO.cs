@@ -8,7 +8,7 @@ namespace ChatNest.Models.DTO
         public Guid AdminID { get; set; }
 
         [Required]
-        public Guid UserID { get; set; }
+        public Guid UserID { get; set; } 
 
         [Required]
         public string NewRole { get; set; }
@@ -22,11 +22,5 @@ namespace ChatNest.Models.DTO
         public Guid UserID { get; set; }
         [Required]
         public bool NewStatus { get; set; }
-    }
-
-    public class AdminResponseModelDTO
-    {
-        public int MessageID { get; set; }
-        public string MessageDescription { get; set; }
     }
 }

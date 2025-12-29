@@ -4,6 +4,7 @@ using System.Data;
 using ChatNest.Models.Domain;
 using Azure;
 using ChatNest.Models.DTO;
+using ChatNest.Models.Common;
 
 namespace ChatNest.Repositories
 {
@@ -16,15 +17,9 @@ namespace ChatNest.Repositories
             this.configuration = configuration;
         }
 
-
         public async Task<UserResponseModel> CreateUserAsync(User user)
         {
-            var response = new UserResponseModel
-            {
-                User = null,
-                MessageID = 0,
-                MessageDescription = string.Empty
-            };
+            var response = new UserResponseModel();
             try
             {
                 using (var connection = new SqlConnection(configuration.GetConnectionString("ChatNestConnectionString")))
@@ -39,17 +34,10 @@ namespace ChatNest.Repositories
 
                     var userData = await connection.QuerySingleOrDefaultAsync<UserResponse>("usp_CreateUser", parameters, commandType: CommandType.StoredProcedure);
 
+                    response.User = userData;
                     response.MessageID = parameters.Get<int>("@messageID");
                     response.MessageDescription = parameters.Get<string>("@messagedescription");
 
-                    if (response.MessageID == -2 || response.MessageID == 0 || response.MessageID == -99)
-                    {
-                        response.User = null;
-                    }
-                    else
-                    {
-                        response.User = userData;
-                    }
                 }
             }
 
@@ -67,8 +55,9 @@ namespace ChatNest.Repositories
             return response;
         }
 
-        public async Task<object> SoftDeleteUserAsync(UserParamModel userParam)
+        public async Task<BaseResponse> SoftDeleteUserAsync(UserParamModel userParam)
         {
+            var response = new BaseResponse();
             try
             {
                 using (var connection = new SqlConnection(configuration.GetConnectionString("ChatNestConnectionString")))
@@ -80,14 +69,10 @@ namespace ChatNest.Repositories
                     await connection.ExecuteAsync("usp_SoftDeleteUser", parameters, commandType: CommandType.StoredProcedure);
                     var messageID = parameters.Get<int>("@messageID");
                     var messageDescription = parameters.Get<string>("@messagedescription");
-                    if (messageID == 1 || messageID == -1 || messageID == -99)
-                    {
-                        return new { MessageID = messageID, MessageDescription = messageDescription };
-                    }
-                    else
-                    {
-                        throw new Exception($"Unexpected MessageID ({messageID}) from stored procedure.");
-                    }
+
+                    response.MessageID = messageID;
+                    response.MessageDescription = messageDescription;
+
                 }
             }
             catch (SqlException sqlEx)
@@ -98,17 +83,12 @@ namespace ChatNest.Repositories
             {
                 throw new Exception($"Unexpected error: {ex.Message}");
             }
-
+            return response;
         }
 
         public async Task<UserResponseModelDetailed> ReActivateUserAsync(UserParamModel userParam)
         {
-            var response = new UserResponseModelDetailed
-            {
-                User = null,
-                MessageID = 0,
-                MessageDescription = string.Empty
-            };
+            var response = new UserResponseModelDetailed();
             try
             {
                 using (var connection = new SqlConnection(configuration.GetConnectionString("ChatNestConnectionString")))
@@ -120,17 +100,9 @@ namespace ChatNest.Repositories
 
                     var userData = await connection.QuerySingleOrDefaultAsync<UserResponseDetailed>("usp_ReActivateUser", parameters, commandType: CommandType.StoredProcedure);
 
-                    if (userData == null)
-                    {
-                        response.MessageID = -4;
-                        response.MessageDescription = "Stored procedure success but no data found.";
-                    }
-                    else
-                    {
-                        response.User = userData;
-                        response.MessageID = parameters.Get<int>("@messageID");
-                        response.MessageDescription = parameters.Get<string>("@messagedescription");
-                    }
+                    response.User = userData;
+                    response.MessageID = parameters.Get<int>("@messageID");
+                    response.MessageDescription = parameters.Get<string>("@messagedescription");
                 }
             }
             catch (SqlException sqlEx)
@@ -165,65 +137,9 @@ namespace ChatNest.Repositories
                     parameters.Add("@messagedescription", dbType: DbType.String, direction: ParameterDirection.Output, size: 255);
                     var userData = await connection.QuerySingleOrDefaultAsync<UserResponseDetailed>("usp_GetUserbyID", parameters, commandType: CommandType.StoredProcedure);
 
-                    if (userData == null)
-                    {
-                        response.MessageID = -4;
-                        response.MessageDescription = "Stored procedure success but no data found.";
-                    }
-
-                    else
-                    {
-                        response.User = userData;
-                        response.MessageID = parameters.Get<int>("@messageID");
-                        response.MessageDescription = parameters.Get<string>("@messagedescription");
-                    }
-                }
-            }
-            catch (SqlException sqlEx)
-            {
-                response.MessageID = -99;
-                response.MessageDescription = $"Database error: {sqlEx.Message}";
-            }
-            catch (Exception ex)
-            {
-                response.MessageID = -100;
-                response.MessageDescription = $"Unexpected error: {ex.Message}";
-            }
-
-            return response;
-        }
-
-        public async Task<UserResponseModelList> GetUsersAsync()
-        {
-            var response = new UserResponseModelList
-            {
-                Users = new List<UserResponse>(),
-                MessageID = 0,
-                MessageDescription = string.Empty
-            };
-
-            try
-            { 
-                using (var connection = new SqlConnection(configuration.GetConnectionString("ChatNestConnectionString")))
-                {
-                    var parameters = new DynamicParameters();
-                    parameters.Add("@messageID", dbType: DbType.Int32, direction: ParameterDirection.Output);
-                    parameters.Add("@messagedescription", dbType: DbType.String, direction: ParameterDirection.Output, size: 255);
-                    var usersData = await connection.QueryAsync<UserResponse>("usp_GetAllUser", parameters, commandType: CommandType.StoredProcedure);
-
-                    if (usersData == null)
-                    {
-                        response.MessageID = -4;
-                        response.MessageDescription = "Stored procedure success but no data found.";
-
-                    }
-                    else
-                    {
-                        response.Users = usersData.ToList();
-                        response.MessageID = parameters.Get<int>("@messageID");
-                        response.MessageDescription = parameters.Get<string>("@messagedescription");
-                    }
-
+                    response.User = userData;
+                    response.MessageID = parameters.Get<int>("@messageID");
+                    response.MessageDescription = parameters.Get<string>("@messagedescription");
                 }
             }
             catch (SqlException sqlEx)
@@ -242,12 +158,7 @@ namespace ChatNest.Repositories
 
         public async Task<UserResponseModelDetailed> UpdateUserAsync(User user)
         {
-            var response = new UserResponseModelDetailed
-            {
-                User = null,
-                MessageID = 0,
-                MessageDescription = string.Empty
-            };
+            var response = new UserResponseModelDetailed();
 
             try
             {
@@ -255,24 +166,20 @@ namespace ChatNest.Repositories
                 {
                     var parameters = new DynamicParameters();
                     parameters.Add("@userID", user.userID);
-                    parameters.Add("@username", user.username);
-                    parameters.Add("@email", user.email);
-                    parameters.Add("@passwordHash", user.passwordHash);
+
+                    // Nullable parameters
+                    parameters.Add("@username", string.IsNullOrEmpty(user.username) ? null : user.username);
+                    parameters.Add("@email", string.IsNullOrEmpty(user.email) ? null : user.email);
+                    parameters.Add("@passwordHash", string.IsNullOrEmpty(user.passwordHash) ? null : user.passwordHash);
+
                     parameters.Add("@messageID", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     parameters.Add("@messagedescription", dbType: DbType.String, direction: ParameterDirection.Output, size: 255);
+
                     var userData = await connection.QuerySingleOrDefaultAsync<UserResponseDetailed>("usp_UpdateUser", parameters, commandType: CommandType.StoredProcedure);
 
+                    response.User = userData;
                     response.MessageID = parameters.Get<int>("@messageID");
                     response.MessageDescription = parameters.Get<string>("@messagedescription");
-
-                    if (response.MessageID == -2 || response.MessageID == -1 || response.MessageID == -99)
-                    {
-                        response.User = null;
-                    }
-                    else
-                    {
-                        response.User = userData;
-                    }
                 }
             }
             catch (SqlException sqlEx)
@@ -285,6 +192,7 @@ namespace ChatNest.Repositories
                 response.MessageID = -100;
                 response.MessageDescription = $"Unexpected error: {ex.Message}";
             }
+
             return response;
         }
 
@@ -319,5 +227,35 @@ namespace ChatNest.Repositories
 
             return response;
         }
+
+        public async Task<UserIDResponseModel> GetUserByEmailFailedAsync(string email)
+        {
+            var response = new UserIDResponseModel();
+            try
+            {
+                using (var connection = new SqlConnection(configuration.GetConnectionString("ChatNestConnectionString")))
+                {
+                    var parameters = new DynamicParameters();
+                    parameters.Add("@Email", email);
+                    parameters.Add("@messageID", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    parameters.Add("@messageDescription", dbType: DbType.String, direction: ParameterDirection.Output, size: 255);
+
+                    var userIDs = await connection.QueryAsync<UserIDResponse>("usp_GetUserByEmailFailed", parameters, commandType: CommandType.StoredProcedure);
+
+                    response.UserIDResponse = userIDs.ToList();
+                    response.MessageID = parameters.Get<int>("@messageID");
+                    response.MessageDescription = parameters.Get<string>("@messageDescription");
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                throw new Exception($"Database error: {sqlEx.Message}");
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Unexpected error: {ex.Message}");
+            }
+            return response;
+        }   
     }
 }

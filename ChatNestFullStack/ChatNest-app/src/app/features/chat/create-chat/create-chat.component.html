@@ -8,6 +8,11 @@
     </div>
   </div>
 
+  <!-- 🔴 Inline Feedback Banner -->
+  <div *ngIf="chatError" class="error-banner">
+    {{ chatError }}
+  </div>
+
   <!-- Chat Type -->
   <div class="tab-bar">
     <label>
@@ -40,11 +45,10 @@
       <button (click)="addEmail()">Add</button>
     </div>
     <div *ngIf="emailError" class="error-message">{{ emailError }}</div>
-
   </div>
 
   <!-- Selected Participants -->
-  <div *ngIf="isGroupChat && (selectedFriends.length || enteredMails.length)" class="request-list">
+  <div *ngIf="selectedFriends.length || enteredMails.length" class="request-list">
     <h4>Selected Participants</h4>
 
     <div *ngFor="let friend of selectedFriends" class="request-item">
@@ -61,9 +65,15 @@
       </div>
       <button (click)="removeEmail(mail)">Remove</button>
     </div>
+  </div>
 
-    <div class="request-actions" style="margin-top: 12px;">
-      <button (click)="startGroupChat()">Start Group Chat</button>
-    </div>
+  <!-- Action Buttons -->
+  <div class="request-actions" style="margin-top: 12px;">
+    <button *ngIf="!isGroupChat && enteredMails.length > 0" (click)="CreateChat(false, [], enteredMails)">
+      Start Chat with Email
+    </button>
+    <button *ngIf="isGroupChat && (selectedFriends.length || enteredMails.length)" (click)="startGroupChat()">
+      Start Group Chat
+    </button>
   </div>
 </div>

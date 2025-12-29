@@ -18,7 +18,12 @@ export class GroupSettingsComponent implements OnInit {
   groupName: string = '';
   members: ChatMember[] = [];
 
+  isGroupChat: boolean = false;
   newUserId: string = '';
+
+  // 🔴 Inline feedback state
+  statusMessage: string = '';
+  statusType: 'success' | 'error' | '' = '';
 
   constructor(
     private route: ActivatedRoute,
@@ -28,32 +33,43 @@ export class GroupSettingsComponent implements OnInit {
 
   ngOnInit(): void {
     this.chatID = this.route.snapshot.paramMap.get('id')!;
-    this.currentUserID = localStorage.getItem('userID') ?? '';
     this.currentUserID = this.authService.getUserID() || '';
-    this.loadMembers();
 
-  }
-
-  loadMembers(): void {
-    this.chatService.getChatMembers(this.chatID).subscribe({
-      next: (res:GetChatMembersResponseModel) => {
-        if (res.messageID === 1) {
-          this.members = res.members;
-          
-          this.currentUserIsAdmin = this.members.find(m => m.userID === this.currentUserID)?.isAdmin ?? false;
-          console.log('currentUserID:', this.currentUserID);
-          console.log('members:', this.members);
-
-
-        }
-        else {
-          console.error(res.messageDescription);
-        }
+    // Getting chat type and group name
+    this.chatService.getChats(this.currentUserID).subscribe({
+      next: res => {
+        const chat = res.chats.find(c => c.chatID === this.chatID);
+        this.isGroupChat = chat?.isGroup ?? false;
+        this.groupName = chat?.displayName ?? '';
+        this.loadMembers(); // Load members after determining chat type
+      },
+      error: err => {
+        this.statusMessage = err.error?.messageDescription || 'Failed to load chat info.';
+        this.statusType = 'error';
       }
     });
   }
 
-    updateGroupName(): void {
+  loadMembers(): void {
+    this.chatService.getChatMembers(this.chatID).subscribe({
+      next: (res: GetChatMembersResponseModel) => {
+        if (res.messageID === 1) {
+          this.members = res.members;
+          this.currentUserIsAdmin = this.members.find(m => m.userID === this.currentUserID)?.isAdmin ?? false;
+        } else {
+          this.statusMessage = res.messageDescription;
+          this.statusType = 'error';
+        }
+      },
+      error: err => {
+        this.statusMessage = err.error?.messageDescription || 'Failed to load members.';
+        this.statusType = 'error';
+      }
+    });
+  }
+
+
+  updateGroupName(): void {
     const payload: UpdateGroupNameRequestDTO = {
       chatID: this.chatID,
       newName: this.groupName,
@@ -63,15 +79,16 @@ export class GroupSettingsComponent implements OnInit {
     this.chatService.updateGroupName(payload).subscribe({
       next: res =>{
         if (res.messageID === 1) {
-          alert('Group name updated');
-        }
-        else {
-          alert(res.messageDescription);
+          this.statusMessage = 'Group name updated successfully.';
+          this.statusType = 'success';
+        } else {
+          this.statusMessage = res.messageDescription;
+          this.statusType = 'error';
         }
       },
       error: err => {
-        alert(`Group name could not be updated: ${err.error?.messageDescription || err.message}`);
-        console.error('HTTP error:', err);
+        this.statusMessage = err.error?.messageDescription || 'Group name could not be updated.';
+        this.statusType = 'error';
       }
     });
   }
@@ -88,14 +105,16 @@ export class GroupSettingsComponent implements OnInit {
       next: res => {
         if (res.messageID === 1) {
           member.isAdmin = true;
-        }
-        else {
-          alert(res.messageDescription);
+          this.statusMessage = `${member.userName} is now an admin.`;
+          this.statusType = 'success';
+        } else {
+          this.statusMessage = res.messageDescription;
+          this.statusType = 'error';
         }
       },
       error: err => {
-        alert(`Could not set admin: ${err.error?.messageDescription || err.message}`);
-        console.error('HTTP error:', err);
+        this.statusMessage = err.error?.messageDescription || 'Could not set admin.';
+        this.statusType = 'error';
       }
     });
   }
@@ -108,34 +127,29 @@ export class GroupSettingsComponent implements OnInit {
 
     const payload = {
       chatID: this.chatID,
-      userIDs: ids, // Array of user IDs
+      userIDs: ids,
       adminID: this.currentUserID
     };
     
     this.chatService.addUserToChat(payload).subscribe({
       next: res => {
         if (res.messageID === 1) {
-          // Return only new members
           res.members.forEach(m => {
             if (!this.members.find(x => x.userID === m.userID)) {
               this.members.push(m);
             }
           });
-          this.newUserId = ''; // Clean input field
-        } 
-        else {
-          console.error('Business error:', res.messageDescription);
+          this.newUserId = '';
+          this.statusMessage = 'User(s) added successfully.';
+          this.statusType = 'success';
+        } else {
+          this.statusMessage = res.messageDescription;
+          this.statusType = 'error';
         }
       },
       error: err => {
-      // const backendMsg = err.error?.messageDescription || err.message;
-        const backendMsg = err.error?.messageDescription || err.message;
-        alert(`Users could not be added: ${backendMsg}`);
-        console.error('HTTP error:', err);
-
-      },
-      complete: () => {
-        console.log('Add user request completed');
+        this.statusMessage = err.error?.messageDescription || 'Users could not be added.';
+        this.statusType = 'error';
       }
     });
   }
@@ -149,61 +163,57 @@ export class GroupSettingsComponent implements OnInit {
 
     this.chatService.removeUserFromChat(payload).subscribe({
       next: res => {
-      if (res.messageID === 1) {
-        this.members = this.members.filter(m => m.userID !== member.userID);
-      }
-      else {
-        console.error(res.messageDescription);
+        if (res.messageID === 1) {
+          this.members = this.members.filter(m => m.userID !== member.userID);
+          this.statusMessage = `${member.userName} removed from chat.`;
+          this.statusType = 'success';
+        } else {
+          this.statusMessage = res.messageDescription;
+          this.statusType = 'error';
         }
       },
       error: err => {
-        alert(`User could not be removed: ${err.error?.messageDescription || err.message}`);
-        console.error('HTTP error:', err);
+        this.statusMessage = err.error?.messageDescription || 'User could not be removed.';
+        this.statusType = 'error';
       }
     });
   }
 
   deleteChat(): void {
-    this.chatService.deleteChat(this.chatID, this.currentUserID).subscribe(
-      {
-        next: res => {
-          if (res.messageID === 1) {
-            alert('Chat deleted successfully');
-            this.router.navigate(['/chats']);
-          }
-          else {
-            alert(res.messageDescription);
-          }
-        },
-        error: err => {
-          alert(`Chat could not be deleted: ${err.error?.messageDescription || err.message}`);
-        },
-        complete: () => {
-          console.log('Delete chat request completed');
+    this.chatService.deleteChat(this.chatID, this.currentUserID).subscribe({
+      next: res => {
+        if (res.messageID === 1) {
+          this.statusMessage = 'Chat deleted successfully.';
+          this.statusType = 'success';
+          this.router.navigate(['/chats']);
+        } else {
+          this.statusMessage = res.messageDescription;
+          this.statusType = 'error';
         }
+      },
+      error: err => {
+        this.statusMessage = err.error?.messageDescription || 'Chat could not be deleted.';
+        this.statusType = 'error';
       }
-    )
+    });
   }
 
   leaveChat(): void {
-    this.chatService.leaveChat(this.chatID, this.currentUserID).subscribe(
-      {
-        next: res => {
-          if (res.messageID === 1) {
-            alert('You have left the chat');
-            this.router.navigate(['/chats']);
-          }
-          else {
-            alert(res.messageDescription);
-          }
-        },
-        error: err => {
-          alert(`Could not leave the chat: ${err.error?.messageDescription || err.message}`);
-        },
-        complete: () => {
-          console.log('Leave chat request completed');
+    this.chatService.leaveChat(this.chatID, this.currentUserID).subscribe({
+      next: res => {
+        if (res.messageID === 1) {
+          this.statusMessage = 'You have left the chat.';
+          this.statusType = 'success';
+          this.router.navigate(['/chats']);
+        } else {
+          this.statusMessage = res.messageDescription;
+          this.statusType = 'error';
         }
+      },
+      error: err => {
+        this.statusMessage = err.error?.messageDescription || 'Could not leave the chat.';
+        this.statusType = 'error';
       }
-    );
+    });
   }
 }

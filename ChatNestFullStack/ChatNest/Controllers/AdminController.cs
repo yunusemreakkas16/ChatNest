@@ -1,9 +1,8 @@
-﻿using ChatNest.Models.Domain;
+﻿using ChatNest.Models.Common;
+using ChatNest.Models.Domain;
 using ChatNest.Models.DTO;
-using ChatNest.Repositories;
 using ChatNest.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChatNest.Controllers
@@ -13,14 +12,13 @@ namespace ChatNest.Controllers
     [ApiController]
     public class AdminController : ControllerBase
     {
-        private readonly IAdminRepository adminRepository;
+        private readonly IAdminService adminService;
 
-        public AdminController(IAdminRepository adminRepository)
+        public AdminController(IAdminService adminService)
         {
-            this.adminRepository = adminRepository;
+            this.adminService = adminService;
         }
 
-        [Authorize(Roles = "admin")]
         [HttpPost]
         [Route("AdminChangeUserRole")]
         public async Task<ActionResult<UserResponseModel>> AdminChangeUserRoleAsync([FromBody] AdminChangeUserRoleDTO adminChangeUserRoleDTO)
@@ -28,41 +26,50 @@ namespace ChatNest.Controllers
             if (adminChangeUserRoleDTO == null)
                 return BadRequest(new { MessageId = -6, MessageDescription = "Post data is required." });
 
-            var userResponseModelDetailed = await adminRepository.AdminChangeUserRoleAsync(adminChangeUserRoleDTO);
+            var response = await adminService.AdminChangeUserRoleAsync(adminChangeUserRoleDTO);
 
-            if (userResponseModelDetailed.MessageID == -5)
-                return BadRequest(new { MessageId = userResponseModelDetailed.MessageID, MessageDescription = userResponseModelDetailed.MessageDescription });
-
-            if (userResponseModelDetailed.MessageID == -99)
-                return StatusCode(500, new { MessageId = userResponseModelDetailed.MessageID, MessageDescription = userResponseModelDetailed.MessageDescription });
-
-            if (userResponseModelDetailed.MessageID == -100)
-                return StatusCode(500, new { MessageId = userResponseModelDetailed.MessageID, MessageDescription = userResponseModelDetailed.MessageDescription });
-
-            return Ok(new { MessageId = userResponseModelDetailed.MessageID, MessageDescription = userResponseModelDetailed.MessageDescription, User = userResponseModelDetailed.User });
+            return response.MessageID switch
+            {
+                1 => Ok(response),
+                -5 => Forbid(),
+                -99 => StatusCode(500, response),
+                -100 => StatusCode(500, response),
+                _ => BadRequest(response)
+            };
         }
 
-        [Authorize(Roles = "admin")]
         [HttpPost]
         [Route("AdminToggleUserStatus")]
-        public async Task<ActionResult<AdminResponseModelDTO>> AdminToggleUserStatusAsync([FromBody] AdminToggleUserStatusDTO adminToggleUserStatusDTO)
+        public async Task<ActionResult<BaseResponse>> AdminToggleUserStatusAsync([FromBody] AdminToggleUserStatusDTO adminToggleUserStatusDTO)
         {
             if (adminToggleUserStatusDTO == null)
                 return BadRequest(new { MessageId = -6, MessageDescription = "Post data is required." });
 
-            var adminResponseModel = await adminRepository.AdminToggleUserStatusAsync(adminToggleUserStatusDTO);
+            var response = await adminService.AdminToggleUserStatusAsync(adminToggleUserStatusDTO);
 
-            if (adminResponseModel.MessageID == -5)
-                return BadRequest(new { MessageId = adminResponseModel.MessageID, MessageDescription = adminResponseModel.MessageDescription });
+            return response.MessageID switch
+            {
+                1 => Ok(response),
+                -5 => Forbid(),
+                -99 => StatusCode(500, response),
+                -100 => StatusCode(500, response),
+                _ => BadRequest(response)
+            };
+        }
 
-            if (adminResponseModel.MessageID == -99)
-                return StatusCode(500, new { MessageId = adminResponseModel.MessageID, MessageDescription = adminResponseModel.MessageDescription });
-
-            if (adminResponseModel.MessageID == -100)
-                return StatusCode(500, new { MessageId = adminResponseModel.MessageID, MessageDescription = adminResponseModel.MessageDescription });
-
-            return Ok(new { MessageId = adminResponseModel.MessageID, MessageDescription = adminResponseModel.MessageDescription });
-
+        [HttpPost]
+        [Route("AdminGetUsers")]
+        public async Task<ActionResult<UserResponseModelList>> AdminGetUsersAsync(Guid AdminID)
+        {
+            var response = await adminService.AdminGetUsersAsync(AdminID);
+            return response.MessageID switch
+            {
+                1 => Ok(response),
+                -5 => Forbid(),
+                -99 => StatusCode(500, response),
+                -100 => StatusCode(500, response),
+                _ => BadRequest(response)
+            };
         }
 
     }

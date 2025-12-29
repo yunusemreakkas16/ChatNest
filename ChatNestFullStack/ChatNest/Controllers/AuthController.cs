@@ -1,4 +1,5 @@
 ﻿using Azure;
+using Azure.Core;
 using ChatNest.Models.Common;
 using ChatNest.Models.Domain;
 using ChatNest.Models.DTO.ChatNest.Models.DTO;
@@ -53,8 +54,12 @@ namespace ChatNest.Controllers
             return AuthResponse.MessageID switch
             {
                 1 => Ok(AuthResponse),
-                -1 => NotFound(AuthResponse)
+                2 => BadRequest(AuthResponse), // passive user reactivated
+                -1 => Unauthorized(AuthResponse), // invalid password
+                -2 => NotFound(AuthResponse), // no user found
+                _ => StatusCode(500, AuthResponse) // fallback
             };
+
         }
 
         [HttpPost("logout")]
@@ -104,11 +109,11 @@ namespace ChatNest.Controllers
         [HttpPost("RefreshToken")]
         public async Task<ActionResult<RefresherResponseDTO>> RefreshToken([FromBody] RefreshTokenRequest request)
         {
-            // 🟢 Check Model State if valid
+            // Check Model State if valid
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            // 🟢 Convert to RefresherRequestDTO
+            // Convert to RefresherRequestDTO
             var refresherRequest = new RefresherRequestDTO
             {
                 RefreshToken = request.RefreshToken,

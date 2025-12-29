@@ -1,9 +1,9 @@
 ﻿using Azure;
+using ChatNest.Models.Common;
 using ChatNest.Models.Domain;
 using ChatNest.Models.DTO;
 using ChatNest.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChatNest.Controllers
@@ -26,37 +26,18 @@ namespace ChatNest.Controllers
             if (createUserDto == null)
                 return BadRequest(new { MessageId = -6, MessageDescription = "Post data is required." });
 
-            var userResponseModel = await userService.CreateUserAsync(createUserDto);
+            var response = await userService.CreateUserAsync(createUserDto);
 
-            if (userResponseModel.MessageID == -2)
-                return BadRequest(new { MessageId = userResponseModel.MessageID, MessageDescription = userResponseModel.MessageDescription });
-            if (userResponseModel.MessageID == 0)
-                return BadRequest(new { MessageId = userResponseModel.MessageID, MessageDescription = userResponseModel.MessageDescription });
+            return response.MessageID switch
+            {
+                1 => Ok(response),
+                -2 => BadRequest(response),
+                0 => BadRequest(response),
+                -99 => StatusCode(500, response),
+                -100 => StatusCode(500, response),
+                _ => BadRequest(response)
+            };
 
-            if (userResponseModel.MessageID == -99)
-                return StatusCode(500, new { MessageId = -99, MessageDescription = userResponseModel.MessageDescription });
-
-            if (userResponseModel.MessageID == -100)
-                return StatusCode(500, new { MessageId = -100, MessageDescription = userResponseModel.MessageDescription });
-
-            return Ok(new { MessageId = userResponseModel.MessageID, MessageDescription = userResponseModel.MessageDescription, User = userResponseModel.User });
-        }
-
-        [Authorize]
-        [HttpPost]
-        [Route("UserList")]
-        
-        public async Task<ActionResult<UserResponseModelList>> GetUsersAsync()
-        {
-            var userResponseModelList = await userService.GetUsersAsync();
-
-            if (userResponseModelList.MessageID == -4)
-                return NoContent();
-            if (userResponseModelList.MessageID == -99)
-                return StatusCode(500, new { MessageId = -99, MessageDescription = userResponseModelList.MessageDescription });
-            if (userResponseModelList.MessageID == -100)
-                return StatusCode(500, new { MessageId = -100, MessageDescription = userResponseModelList.MessageDescription });
-            return Ok(new { MessageId = userResponseModelList.MessageID, MessageDescription = userResponseModelList.MessageDescription, Users = userResponseModelList.Users });
         }
 
         [Authorize]
@@ -66,14 +47,17 @@ namespace ChatNest.Controllers
         {
             if (userParam == null || userParam.UserID == Guid.Empty)
                 return BadRequest(new { MessageId = -6, MessageDescription = "User parameter cannot be null or empty." });
-            var userResponseModelDetailed = await userService.GetUserDetailedAsync(userParam);
-            if (userResponseModelDetailed.MessageID == -4)
-                return Ok(new { MessageId = -4, MessageDescription = userResponseModelDetailed.MessageDescription });
-            if (userResponseModelDetailed.MessageID == -99)
-                return StatusCode(500, new { MessageId = -99, MessageDescription = userResponseModelDetailed.MessageDescription });
-            if (userResponseModelDetailed.MessageID == -100)
-                return StatusCode(500, new { MessageId = -100, MessageDescription = userResponseModelDetailed.MessageDescription });
-            return Ok(new { MessageId = userResponseModelDetailed.MessageID, MessageDescription = userResponseModelDetailed.MessageDescription, User = userResponseModelDetailed.User });
+
+            var response = await userService.GetUserDetailedAsync(userParam);
+
+            return response.MessageID switch
+            {
+                1 => Ok(response),
+                -99 => StatusCode(500, response),
+                -100 => StatusCode(500, response),
+                _ => BadRequest(response)
+            };
+
         }
 
         [Authorize]
@@ -83,28 +67,38 @@ namespace ChatNest.Controllers
         {
             if (updateUserRequestDto == null || updateUserRequestDto.UserID == Guid.Empty)
                 return BadRequest(new { MessageId = -6, MessageDescription = "Update user request cannot be null or empty." });
-            var userResponseModelDetailed = await userService.UpdateUserAsync(updateUserRequestDto);
-            if (userResponseModelDetailed.MessageID == -2)
-                return BadRequest(new { MessageId = userResponseModelDetailed.MessageID, MessageDescription = userResponseModelDetailed.MessageDescription });
-            if (userResponseModelDetailed.MessageID == -1)
-                return BadRequest(new { MessageId = userResponseModelDetailed.MessageID, MessageDescription = userResponseModelDetailed.MessageDescription });
-            if (userResponseModelDetailed.MessageID == -99)
-                return StatusCode(500, new { MessageId = userResponseModelDetailed.MessageID, MessageDescription = userResponseModelDetailed.MessageDescription });
-            if (userResponseModelDetailed.MessageID == -100)
-                return StatusCode(500, new { MessageId = -100, MessageDescription = userResponseModelDetailed.MessageDescription });
-            return Ok(new { MessageId = userResponseModelDetailed.MessageID, MessageDescription = userResponseModelDetailed.MessageDescription, User = userResponseModelDetailed.User });
+
+            var response = await userService.UpdateUserAsync(updateUserRequestDto);
+
+            return response.MessageID switch
+            {
+                1 => Ok(response),
+                -2 => BadRequest(response),
+                -1 => BadRequest(response),
+                -99 => StatusCode(500, response),
+                -100 => StatusCode(500, response),
+                _ => BadRequest(response)
+            };
+
         }
 
         [Authorize]
         [HttpPost]
         [Route("SoftDeleteUser")]
-        public async Task<ActionResult<bool>> SoftDeleteUserAsync([FromBody] UserParamModel userParam)
+        public async Task<ActionResult<BaseResponse>> SoftDeleteUserAsync([FromBody] UserParamModel userParam)
         {
             if (userParam == null || userParam.UserID == Guid.Empty)
                 return BadRequest(new { MessageId = -6, MessageDescription = "User parameter cannot be null or empty." });
             var result = await userService.SoftDeleteUserAsync(userParam);
 
-            return Ok(result);
+            return result.MessageID switch
+            {
+                1 => Ok(result),
+                -1 => BadRequest(result),
+                -99 => StatusCode(500, result),
+                -100 => StatusCode(500, result),
+                _ => BadRequest(result)
+            };
         }
 
         [Authorize]
@@ -114,14 +108,16 @@ namespace ChatNest.Controllers
         {
             if (userParam == null || userParam.UserID == Guid.Empty)
                 return BadRequest(new { MessageId = -6, MessageDescription = "User parameter cannot be null or empty." });
-            var userResponseModelDetailed = await userService.ReActivateUserAsync(userParam);
-            if (userResponseModelDetailed.MessageID == -4)
-                return NoContent();
-            if (userResponseModelDetailed.MessageID == -99)
-                return StatusCode(500, new { MessageId = userResponseModelDetailed.MessageID, MessageDescription = userResponseModelDetailed.MessageDescription });
-            if (userResponseModelDetailed.MessageID == -100)
-                return StatusCode(500, new { MessageId = userResponseModelDetailed.MessageID, MessageDescription = userResponseModelDetailed.MessageDescription });
-            return Ok(new { MessageId = userResponseModelDetailed.MessageID, MessageDescription = userResponseModelDetailed.MessageDescription, User = userResponseModelDetailed.User });
+
+            var response = await userService.ReActivateUserAsync(userParam);
+
+            return response.MessageID switch
+            {
+                1 => Ok(response),
+                -99 => StatusCode(500, response),
+                -100 => StatusCode(500, response),
+                _ => BadRequest(response)
+            };
         }
     }
 }

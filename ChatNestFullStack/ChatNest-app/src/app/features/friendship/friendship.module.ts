@@ -1,23 +1,23 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { FriendshipRoutingModule } from './friendship-routing.module';
+import { FormsModule } from '@angular/forms';
+import { AddFriendComponent } from './add-friend/add-friend.component';
 import { FriendListComponent } from './friend-list/friend-list.component';
 import { FriendRequestComponent } from './friend-request/friend-request.component';
-import { AddFriendComponent } from './add-friend/add-friend.component';
 
 
 
 @NgModule({
-  declarations: [],
+  declarations: [
+    AddFriendComponent,
+    FriendListComponent,
+    FriendRequestComponent
+  ],
   imports: [
     CommonModule,
-    RouterModule.forChild([
-      {path: 'list', component: FriendListComponent },
-      {path: 'requests', component: FriendRequestComponent },
-      {path: 'addFriend', component: AddFriendComponent }
-      ]
-    )
-  ]  
+    FormsModule,
+    FriendshipRoutingModule
+  ]
 })
-
-export class FriendshipModule {}
+export class FriendshipModule { }

@@ -5,6 +5,7 @@ import { CreateChatResponseModel } from '../models/chats-response';
 import { AuthService } from '../../authenticate/services/auth.service';
 import { FriendListResponseModel, FriendResponse } from '../../friendship/models/friendship';
 import { CreateChatRequestDTO } from '../models/chats-request';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-create-chat',
@@ -29,7 +30,8 @@ export class CreateChatComponent {
   constructor(
     private ChatService: ChatService,
     private FriendShipService: FriendshipService,
-    private AuthService: AuthService
+    private AuthService: AuthService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -88,22 +90,31 @@ export class CreateChatComponent {
     name: isGroup ? (groupName?.trim().length ? groupName.trim() : undefined) : undefined,
     participantIDs: isGroup ? selectedFriendIDs : undefined,
     targetUserID: !isGroup && selectedFriendIDs.length > 0 ? selectedFriendIDs[0] : undefined,
-    targetEmails: enteredEmails.length > 0 ? enteredEmails : undefined
+    targetEmails: isGroup 
+      ? (enteredEmails.length > 0 ? enteredEmails : undefined) 
+      : (!selectedFriendIDs.length && enteredEmails.length > 0 ? [enteredEmails[0]] : undefined)
   };
 
   this.ChatService.createChat(payload).subscribe({
     next: (response: CreateChatResponseModel) => {
       if (response.messageID === 1) {
-        alert('Chat created successfully!');
+        this.chatError = '';
+        this.router.navigate(['/chats']); 
       } else {
-        alert('Failed to create chat. ' + response.messageDescription);
+        this.chatError = response.messageDescription; 
       }
     },
     error: (error) => {
       console.error('Error creating chat:', error);
-      alert('An error occurred while creating the chat.');
+      // Backend response varsa onu göster
+      if (error.error && error.error.messageDescription) {
+        this.chatError = error.error.messageDescription;
+      } else {
+        this.chatError = 'An unexpected error occurred.';
+      }
     }
   });
+
 }
 
 
