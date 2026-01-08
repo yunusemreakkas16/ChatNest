@@ -4,6 +4,7 @@ import { catchError, Observable, of, switchMap, throwError } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { UserService } from '../../user/services/user.service';
 import { CreateUserRequestDto, LoginRequestDto, LoginResponseDto, UserResponseModel } from '../../user/models/user';
+import { BaseResponse } from 'src/app/base-response-model/base-response';
 
 @Injectable({
   providedIn: 'root'
@@ -37,14 +38,12 @@ export class AuthService {
     });
   }
   
-  // 🟢 Modified Section
   refreshToken(): Observable<any> {
     const refresh = this.getRefreshToken();
     if (!refresh) {
       return throwError(() => 'No refresh token');
     }
 
-    // 🟢 Backend's Expectation Format
     const refreshRequest = {
       RefreshToken: refresh
       // UserAgent and other fields can be added if required by backend
@@ -53,16 +52,16 @@ export class AuthService {
     return this.http.post<any>(`${environment.apiUrl}/api/Auth/RefreshToken`, refreshRequest)
       .pipe(
         switchMap(res => {
-          // 🟢 added response control
+          // added response control
           if (res && res.accessToken && res.refreshToken) {
             this.setTokens(res.accessToken, res.refreshToken);
-            return of(res); // 🟢 only setting tokens, returning response if needed
+            return of(res); // only setting tokens, returning response if needed
           } else {
             return throwError(() => 'Invalid token response');
           }
         }),
         catchError(error => {
-        // 🟢 Show Failure Details
+            // Show Failure Details
             console.error('Refresh token error details:', {
             status: error.status,
             statusText: error.statusText,
@@ -84,6 +83,47 @@ export class AuthService {
   register(data: CreateUserRequestDto): Observable<UserResponseModel> {
     // Proxy: Delegate user creation to UserService
     return this.userService.AddUser(data);
+  }
+
+  logout(): Observable<BaseResponse> {
+    const refreshToken = this.getRefreshToken();
+    if (!refreshToken) {
+      return throwError(() => new Error('No refresh token found'));
+    }
+
+    const LogoutRequest = {
+      RefreshToken: refreshToken
+    };
+
+    return this.http.post<BaseResponse>(`${environment.apiUrl}/api/Auth/logout`, LogoutRequest).pipe(
+      switchMap(res => {
+        this.setTokens('', '');
+        return of(res);
+      }),
+      catchError(error => {
+        console.error('Logout error:', error);
+        return throwError(() => error);
+      })
+    );
+  }
+
+  logoutAllDevices(): Observable<BaseResponse> {
+    const userID = this.getUserID();
+    if (!userID) {
+      return throwError(() => new Error('No user ID found'));
+    }
+
+    return this.http.post<BaseResponse>(`${environment.apiUrl}/api/Auth/logout_allDevices?userId=${userID}`, {}
+).pipe(
+      switchMap(res => {
+        this.setTokens('', '');
+        return of(res);
+      }),
+      catchError(error => {
+        console.error('Logout all devices error:', error);
+        return throwError(() => error);
+      })
+    );
   }
 
 

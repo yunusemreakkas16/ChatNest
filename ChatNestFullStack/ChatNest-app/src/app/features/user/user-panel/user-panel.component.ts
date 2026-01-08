@@ -61,7 +61,7 @@ export class UserPanelComponent implements OnInit {
   }
 
 
-updateUser(): void {
+  updateUser(): void {
   if (!this.user) return;
 
   const formValues = this.updateForm.value;
@@ -117,4 +117,49 @@ updateUser(): void {
       }
     });
   }
+
+  logout(): void {
+    this.loading = true;
+    this.authService.logout().subscribe({
+      next: (response: BaseResponse) => {
+        if (response.messageID === 1) {
+          this.successMessage = response.messageDescription ?? 'Logged out successfully.';
+          this.router.navigate(['/login']);
+        } else {
+          this.errorMessage = response.messageDescription ?? 'Failed to logout.';
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        this.errorMessage = 'An error occurred while logging out.';
+        console.error(error);
+        this.loading = false;
+        this.router.navigate(['/login']);
+      }
+    });
+  }
+
+  logoutAllDevices(): void {
+    this.loading = true;
+    this.authService.logoutAllDevices().subscribe({
+      next: (response: BaseResponse) => {
+        if (response.messageID === 1) {
+          this.successMessage = response.messageDescription ?? 'Logged out from all devices.';
+          this.user = undefined;
+          this.router.navigate(['/login']);
+        } else {
+          this.errorMessage = response.messageDescription ?? 'Logout from all devices failed.';
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        this.errorMessage = 'An error occurred while logging out from all devices.';
+        console.error(error);
+        this.loading = false;
+        this.router.navigate(['/login']);
+      }
+    });
+  }
+
+
 }
