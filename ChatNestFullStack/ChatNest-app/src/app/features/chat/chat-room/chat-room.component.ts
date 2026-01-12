@@ -104,7 +104,8 @@ export class ChatRoomComponent implements OnInit {
     this.messages.push(tempMessage);
 
     this.messageService.sendMessage({ chatId: this.chatId, senderId: this.userId, content }).subscribe({
-      next: () => {
+      next: (res) => {
+        tempMessage.messageID = res.newMessageID;
         tempMessage.status = 'sent';
         this.messageForm.reset();
       },

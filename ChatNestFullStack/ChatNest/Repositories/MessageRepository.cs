@@ -128,11 +128,7 @@ namespace ChatNest.Repositories
 
         public async Task<SendMessageResponseModel> SendMessageAsync(Message message)
         {
-            var response = new SendMessageResponseModel 
-            {
-                MessageID = 0,
-                MessageDescription = string.Empty
-            };
+            var response = new SendMessageResponseModel();
 
             try
             {
@@ -144,6 +140,7 @@ namespace ChatNest.Repositories
                     parameters.Add("@senderID", message.senderId);
                     parameters.Add("@content", message.content);
 
+                    parameters.Add("@newMessageID", dbType: DbType.Guid, direction: ParameterDirection.Output);
                     parameters.Add("@messageID", dbType: DbType.Int32, direction: ParameterDirection.Output);
                     parameters.Add("@messageDescription", dbType: DbType.String, size: 255, direction: ParameterDirection.Output);
 
@@ -151,6 +148,7 @@ namespace ChatNest.Repositories
 
                     response.MessageID = parameters.Get<int>("@messageID");
                     response.MessageDescription = parameters.Get<string>("@messageDescription");
+                    response.NewMessageID = parameters.Get<Guid>("@newMessageID");
                 }
             }
             catch (SqlException sqlEx)

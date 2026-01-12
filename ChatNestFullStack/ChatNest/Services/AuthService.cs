@@ -55,7 +55,7 @@ namespace ChatNest.Services
         {
             var baseResponse = new BaseResponse();
 
-            // 1. Normal akış: aktif kullanıcı arama
+            //  Search user by email
             var EmailResponse = new GetIDsByEmailRequestsDto
             {
                 Email = new List<string> { loginRequestDTO.Email }
@@ -65,7 +65,7 @@ namespace ChatNest.Services
 
             if (UserIDResponse.MessageID != 1 || UserIDResponse.UserIDResponse == null || !UserIDResponse.UserIDResponse.Any())
             {
-                // Pasif kullanıcı kontrolü
+                // Check if user exists but is deleted
                 var fallbackResponse = await userService.GetUserByEmailFailedAsync(loginRequestDTO.Email);
 
                 if (fallbackResponse.MessageID == 2 && fallbackResponse.UserIDResponse?.Any() == true)
@@ -75,12 +75,12 @@ namespace ChatNest.Services
 
                     if (loginRequestDTO.ReactivateIfDeleted)
                     {
-                        // Reaktivasyon
+                        // Reactivacion if requested
                         var reactivateResponse = await userService.ReActivateUserAsync(userParam);
 
                         if (reactivateResponse.MessageID == 1)
                         {
-                            // Reaktivasyon başarılı → login akışına devam
+                            // Reactivated successfully, continue login
                             return await ContinueLoginAsync(userId, loginRequestDTO.Password, userAgent, ipAddress);
                         }
                     }
@@ -99,11 +99,8 @@ namespace ChatNest.Services
             return await ContinueLoginAsync(UserID, loginRequestDTO.Password, userAgent, ipAddress);
         }
 
-
-
-        // Yardımcı metod: ana login akışı
-        public async Task<(BaseResponse baseResponse, string AccessToken, string RefreshToken)> ContinueLoginAsync(
-            Guid userId, string password, string userAgent, string ipAddress)
+        // Helper method to continue login process
+        public async Task<(BaseResponse baseResponse, string AccessToken, string RefreshToken)> ContinueLoginAsync(Guid userId, string password, string userAgent, string ipAddress)
         {
             var baseResponse = new BaseResponse();
 
@@ -132,8 +129,6 @@ namespace ChatNest.Services
             baseResponse.MessageDescription = "Login successful.";
             return (baseResponse, accessToken, refreshToken);
         }
-
-
 
         public async Task<BaseResponse> LogOutAsync(string refreshToken)
         {

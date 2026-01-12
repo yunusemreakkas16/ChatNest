@@ -11,7 +11,10 @@ namespace ChatNest.Models.Domain
         public bool? isDeleted { get; set; }
     }
 
-    public class SendMessageResponseModel : BaseResponse { }
+    public class SendMessageResponseModel : BaseResponse
+    {
+        public Guid NewMessageID { get; set; }
+    }
     public class DeleteMessageResponseModel : BaseResponse { }
 
     public class GroupMessageResponse

@@ -1,6 +1,8 @@
 import { BaseResponse } from '../../../base-response-model/base-response';
 
-export interface SendMessageResponseModel extends BaseResponse {}
+export interface SendMessageResponseModel extends BaseResponse {
+  newMessageID: string;
+}
 export interface DeleteMessageResponseModel extends BaseResponse {}
 
 export interface GroupMessageResponse {
