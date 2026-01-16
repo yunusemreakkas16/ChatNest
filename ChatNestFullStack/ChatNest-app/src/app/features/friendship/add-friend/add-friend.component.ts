@@ -4,9 +4,10 @@ import { AuthService } from '../../authenticate/services/auth.service';
 import { SendFriendRequestResponseModel } from '../models/friendship';
 
 @Component({
-  selector: 'app-add-friend',
-  templateUrl: './add-friend.component.html',
-  styleUrls: ['./add-friend.component.css']
+    selector: 'app-add-friend',
+    templateUrl: './add-friend.component.html',
+    styleUrls: ['./add-friend.component.css'],
+    standalone: false
 })
 export class AddFriendComponent {
   friendEmail: string = '';

@@ -8,9 +8,10 @@ import { ChatService } from '../services/chat.service';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-  selector: 'app-chat-room',
-  templateUrl: './chat-room.component.html',
-  styleUrls: ['./chat-room.component.css']
+    selector: 'app-chat-room',
+    templateUrl: './chat-room.component.html',
+    styleUrls: ['./chat-room.component.css'],
+    standalone: false
 })
 export class ChatRoomComponent implements OnInit {
 

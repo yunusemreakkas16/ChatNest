@@ -4,9 +4,10 @@ import { FriendshipService } from '../services/friendship.service';
 import { FriendRequestResponse } from '../models/friendship';
 
 @Component({
-  selector: 'app-friend-request',
-  templateUrl: './friend-request.component.html',
-  styleUrls: ['./friend-request.component.css']
+    selector: 'app-friend-request',
+    templateUrl: './friend-request.component.html',
+    styleUrls: ['./friend-request.component.css'],
+    standalone: false
 })
 export class FriendRequestComponent implements OnInit {
   requests: FriendRequestResponse[] = [];

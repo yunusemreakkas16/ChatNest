@@ -8,9 +8,10 @@ import { CreateChatRequestDTO } from '../models/chats-request';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-create-chat',
-  templateUrl: './create-chat.component.html',
-  styleUrls: ['./create-chat.component.css']
+    selector: 'app-create-chat',
+    templateUrl: './create-chat.component.html',
+    styleUrls: ['./create-chat.component.css'],
+    standalone: false
 })
 export class CreateChatComponent {
 

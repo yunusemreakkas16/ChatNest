@@ -6,9 +6,10 @@ import { ChatResponse } from 'src/app/features/chat/models/chats-response';
 import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
-  selector: 'app-chats',
-  templateUrl: './chats.component.html',
-  styleUrls: ['./chats.component.css']
+    selector: 'app-chats',
+    templateUrl: './chats.component.html',
+    styleUrls: ['./chats.component.css'],
+    standalone: false
 })
 export class ChatsComponent {
 

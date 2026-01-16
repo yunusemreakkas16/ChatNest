@@ -7,9 +7,10 @@ import { Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
 
 @Component({
-  selector: 'app-user-panel',
-  templateUrl: './user-panel.component.html',
-  styleUrls: ['./user-panel.component.css']
+    selector: 'app-user-panel',
+    templateUrl: './user-panel.component.html',
+    styleUrls: ['./user-panel.component.css'],
+    standalone: false
 })
 export class UserPanelComponent implements OnInit {
 

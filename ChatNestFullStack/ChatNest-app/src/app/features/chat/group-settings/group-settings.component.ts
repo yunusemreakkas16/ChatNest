@@ -6,9 +6,10 @@ import { AuthService } from 'src/app/features/authenticate/services/auth.service
 import { ChatMember, GetChatMembersResponseModel } from 'src/app/features/chat/models/chats-response';
 
 @Component({
-  selector: 'app-group-settings',
-  templateUrl: './group-settings.component.html',
-  styleUrls: ['./group-settings.component.css']
+    selector: 'app-group-settings',
+    templateUrl: './group-settings.component.html',
+    styleUrls: ['./group-settings.component.css'],
+    standalone: false
 })
 export class GroupSettingsComponent implements OnInit {
 

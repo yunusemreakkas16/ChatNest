@@ -4,9 +4,10 @@ import { FriendResponse } from '../models/friendship';
 import { FriendshipService } from '../services/friendship.service';
 
 @Component({
-  selector: 'app-friend-list',
-  templateUrl: './friend-list.component.html',
-  styleUrls: ['./friend-list.component.css']
+    selector: 'app-friend-list',
+    templateUrl: './friend-list.component.html',
+    styleUrls: ['./friend-list.component.css'],
+    standalone: false
 })
 export class FriendListComponent {
   friends: FriendResponse[] = [];
