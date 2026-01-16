@@ -126,6 +126,72 @@ namespace ChatNest.Repositories
             return response;
         }
 
+        public async Task<MessagesListResponseModel> GetMessagesByIDAsync(Guid requestedMessageID, Guid userID)
+        {
+            var response = new MessagesListResponseModel();
+
+            try
+            {
+                using (SqlConnection connection = new SqlConnection(configuration.GetConnectionString("ChatNestConnectionString")))
+                {
+                    var parameters = new DynamicParameters();
+
+                    parameters.Add("@requestedMessageID", requestedMessageID);
+                    parameters.Add("@userID", userID);
+
+                    parameters.Add("@isGroup", dbType: DbType.Boolean, direction: ParameterDirection.Output);
+                    parameters.Add("@messageID", dbType: DbType.Int32, direction: ParameterDirection.Output);
+                    parameters.Add("@messageDescription", dbType: DbType.String, size: 255, direction: ParameterDirection.Output);
+
+                    // First check if SP returns anything
+                    if (await connection.ExecuteScalarAsync("usp_GetMessageByID", parameters, commandType: CommandType.StoredProcedure) == null)
+                    {
+                        response.MessageID = parameters.Get<int>("@messageID");
+                        response.MessageDescription = parameters.Get<string>("@messageDescription");
+                        return response;
+                    }
+
+                    // Get output parameters
+                    bool isGroup = parameters.Get<bool>("@isGroup");
+                    response.MessageID = parameters.Get<int>("@messageID");
+                    response.MessageDescription = parameters.Get<string>("@messageDescription");
+
+                    if (isGroup)
+                    {
+                        // For group message
+                        var groupMessage = await connection.QueryAsync<GroupMessageResponse>(
+                            "usp_GetMessageByID",
+                            parameters,
+                            commandType: CommandType.StoredProcedure);
+
+                        response.GroupMessages = groupMessage.ToList();
+                    }
+                    else
+                    {
+                        // For 1-1 message
+                        var oneToOneMessage = await connection.QueryAsync<OneToOneMessageResponse>(
+                            "usp_GetMessageByID",
+                            parameters,
+                            commandType: CommandType.StoredProcedure);
+
+                        response.OneToOneMessages = oneToOneMessage.ToList();
+                    }
+                }
+            }
+            catch (SqlException sqlEx)
+            {
+                response.MessageID = -99;
+                response.MessageDescription = $"Database error: {sqlEx.Message}";
+            }
+            catch (Exception ex)
+            {
+                response.MessageID = -100;
+                response.MessageDescription = $"Unexpected error: {ex.Message}";
+            }
+
+            return response;
+        }
+
         public async Task<SendMessageResponseModel> SendMessageAsync(Message message)
         {
             var response = new SendMessageResponseModel();

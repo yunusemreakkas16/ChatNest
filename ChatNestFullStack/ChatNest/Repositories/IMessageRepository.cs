@@ -6,6 +6,7 @@ namespace ChatNest.Repositories
     {
         Task<SendMessageResponseModel> SendMessageAsync(Message message);
         Task<MessagesListResponseModel> GetMessagesAsync(Guid chatID, Guid userID);
+        Task<MessagesListResponseModel> GetMessagesByIDAsync(Guid requestedMessageID, Guid userID);
         Task<DeleteMessageResponseModel> DeleteMessageAsync(Guid messageID, Guid userID);
     }
 }
