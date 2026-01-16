@@ -7,58 +7,78 @@
   </div>
 
   <!-- 🔴 Inline Feedback Banner -->
-  <div *ngIf="statusMessage" 
-       [ngClass]="statusType === 'success' ? 'success-banner' : 'error-banner'" 
-       class="status-banner">
-    {{ statusMessage }}
-  </div>
+  @if (statusMessage) {
+    <div
+      [ngClass]="statusType === 'success' ? 'success-banner' : 'error-banner'"
+      class="status-banner">
+      {{ statusMessage }}
+    </div>
+  }
 
   <!-- Group name section -->
-  <section class="gs-card" *ngIf="isGroupChat">
-    <div class="gs-row">
-      <div class="gs-label">Group Name</div>
-      <div class="gs-value">{{ groupName }}</div>
-    </div>
-
-    <div *ngIf="currentUserIsAdmin" class="gs-edit">
-      <input [(ngModel)]="groupName" placeholder="New group name" />
-      <button (click)="updateGroupName()">Update name</button>
-    </div>
-  </section>
+  @if (isGroupChat) {
+    <section class="gs-card">
+      <div class="gs-row">
+        <div class="gs-label">Group Name</div>
+        <div class="gs-value">{{ groupName }}</div>
+      </div>
+      @if (currentUserIsAdmin) {
+        <div class="gs-edit">
+          <input [(ngModel)]="groupName" placeholder="New group name" />
+          <button (click)="updateGroupName()">Update name</button>
+        </div>
+      }
+    </section>
+  }
 
   <!-- Members list -->
-  <section class="gs-card" *ngIf="isGroupChat">
-    <div class="gs-section-title">Members</div>
-
-    <ul class="gs-list">
-      <li *ngFor="let member of members" class="gs-list-item">
-        <div class="gs-member">
-          <span class="gs-user">{{ member.userName }}</span>
-          <span *ngIf="member.isAdmin" class="gs-badge">Admin</span>
+  @if (isGroupChat) {
+    <section class="gs-card">
+      <div class="gs-section-title">Members</div>
+      <ul class="gs-list">
+        @for (member of members; track member) {
+          <li class="gs-list-item">
+            <div class="gs-member">
+              <span class="gs-user">{{ member.userName }}</span>
+              @if (member.isAdmin) {
+                <span class="gs-badge">Admin</span>
+              }
+            </div>
+            <!-- Admin fonksiyonları -->
+            @if (currentUserIsAdmin) {
+              <div class="gs-actions">
+                @if (!member.isAdmin) {
+                  <button (click)="makeAdmin(member)">Make admin</button>
+                }
+                <button class="danger" (click)="removeUser(member)">Remove</button>
+              </div>
+            }
+          </li>
+        }
+      </ul>
+      <!-- Add user section -->
+      @if (currentUserIsAdmin) {
+        <div class="gs-edit">
+          <input [(ngModel)]="newUserId" placeholder="Enter user ID to add" />
+          <button (click)="addUser(newUserId)">Add user</button>
         </div>
-
-        <!-- Admin fonksiyonları -->
-        <div class="gs-actions" *ngIf="currentUserIsAdmin">
-          <button *ngIf="!member.isAdmin" (click)="makeAdmin(member)">Make admin</button>
-          <button class="danger" (click)="removeUser(member)">Remove</button>
-        </div>
-      </li>
-    </ul>
-
-    <!-- Add user section -->
-    <div *ngIf="currentUserIsAdmin" class="gs-edit">
-      <input [(ngModel)]="newUserId" placeholder="Enter user ID to add" />
-      <button (click)="addUser(newUserId)">Add user</button>
-    </div>
-  </section>
+      }
+    </section>
+  }
 
   <!-- Delete / Leave -->
   <section class="gs-card gs-danger-zone">
     <!-- Grup chat için -->
-    <button *ngIf="isGroupChat && currentUserIsAdmin" class="danger" (click)="deleteChat()">🗑 Delete Group</button>
-    <button *ngIf="isGroupChat" class="danger" (click)="leaveChat()">🚪 Leave Group</button>
+    @if (isGroupChat && currentUserIsAdmin) {
+      <button class="danger" (click)="deleteChat()">🗑 Delete Group</button>
+    }
+    @if (isGroupChat) {
+      <button class="danger" (click)="leaveChat()">🚪 Leave Group</button>
+    }
 
     <!-- 1'e1 chat için -->
-    <button *ngIf="!isGroupChat" class="danger" (click)="deleteChat()">🗑 Delete Chat</button>
+    @if (!isGroupChat) {
+      <button class="danger" (click)="deleteChat()">🗑 Delete Chat</button>
+    }
   </section>
 </div>

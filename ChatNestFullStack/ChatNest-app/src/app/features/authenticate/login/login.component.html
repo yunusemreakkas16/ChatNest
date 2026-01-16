@@ -18,19 +18,25 @@
       </form>
 
       <!-- Error Banner -->
-      <div *ngIf="errorMessage && errorCode !== 2" class="error-banner">
-        <strong *ngIf="errorCode">Error {{ errorCode }}:</strong> {{ errorMessage }}
-      </div>
+      @if (errorMessage && errorCode !== 2) {
+        <div class="error-banner">
+          @if (errorCode) {
+            <strong>Error {{ errorCode }}:</strong>
+            } {{ errorMessage }}
+          </div>
+        }
 
-      <!-- Deleted User Reactivation Box -->
-      <div *ngIf="errorCode === 2" class="reactivate-box">
-        <p>{{ errorMessage }}</p>
-        <label class="reactivate-option">
-          <input type="checkbox" [(ngModel)]="reactivateIfDeleted" />
-          Reactivate my account
-        </label>
-        <button (click)="retryLogin()" class="reactivate-btn">Retry Login</button>
+        <!-- Deleted User Reactivation Box -->
+        @if (errorCode === 2) {
+          <div class="reactivate-box">
+            <p>{{ errorMessage }}</p>
+            <label class="reactivate-option">
+              <input type="checkbox" [(ngModel)]="reactivateIfDeleted" />
+              Reactivate my account
+            </label>
+            <button (click)="retryLogin()" class="reactivate-btn">Retry Login</button>
+          </div>
+        }
       </div>
     </div>
   </div>
-</div>

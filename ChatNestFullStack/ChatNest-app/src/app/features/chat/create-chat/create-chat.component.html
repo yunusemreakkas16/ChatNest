@@ -9,9 +9,11 @@
   </div>
 
   <!-- 🔴 Inline Feedback Banner -->
-  <div *ngIf="chatError" class="error-banner">
-    {{ chatError }}
-  </div>
+  @if (chatError) {
+    <div class="error-banner">
+      {{ chatError }}
+    </div>
+  }
 
   <!-- Chat Type -->
   <div class="tab-bar">
@@ -23,18 +25,26 @@
 
   <!-- Friend List -->
   <div class="request-list">
-    <div *ngIf="friendList.length === 0" class="empty-message">No friends available.</div>
+    @if (friendList.length === 0) {
+      <div class="empty-message">No friends available.</div>
+    }
 
-    <div *ngFor="let friend of friendList" class="request-item">
-      <div class="request-info">
-        <div class="request-name">{{ friend.friendName }}</div>
-        <div class="request-email">{{ friend.friendMail }}</div>
+    @for (friend of friendList; track friend) {
+      <div class="request-item">
+        <div class="request-info">
+          <div class="request-name">{{ friend.friendName }}</div>
+          <div class="request-email">{{ friend.friendMail }}</div>
+        </div>
+        <div class="request-actions">
+          @if (!isGroupChat) {
+            <button (click)="CreateChat(false, [friend.friendID], [], '')">Start Chat</button>
+          }
+          @if (isGroupChat) {
+            <button (click)="addFriendToGroup(friend.friendID)">Add to Group</button>
+          }
+        </div>
       </div>
-      <div class="request-actions">
-        <button *ngIf="!isGroupChat" (click)="CreateChat(false, [friend.friendID], [], '')">Start Chat</button>
-        <button *ngIf="isGroupChat" (click)="addFriendToGroup(friend.friendID)">Add to Group</button>
-      </div>
-    </div>
+    }
   </div>
 
   <!-- Email Input -->
@@ -44,36 +54,46 @@
       <input type="email" [(ngModel)]="newEmail" placeholder="Enter Email" style="flex: 1; margin-right: 8px;" />
       <button (click)="addEmail()">Add</button>
     </div>
-    <div *ngIf="emailError" class="error-message">{{ emailError }}</div>
+    @if (emailError) {
+      <div class="error-message">{{ emailError }}</div>
+    }
   </div>
 
   <!-- Selected Participants -->
-  <div *ngIf="selectedFriends.length || enteredMails.length" class="request-list">
-    <h4>Selected Participants</h4>
-
-    <div *ngFor="let friend of selectedFriends" class="request-item">
-      <div class="request-info">
-        <div class="request-name">{{ friend.friendName }}</div>
-        <div class="request-email">{{ friend.friendMail }}</div>
-      </div>
-      <button (click)="removeFriend(friend.friendID)">Remove</button>
+  @if (selectedFriends.length || enteredMails.length) {
+    <div class="request-list">
+      <h4>Selected Participants</h4>
+      @for (friend of selectedFriends; track friend) {
+        <div class="request-item">
+          <div class="request-info">
+            <div class="request-name">{{ friend.friendName }}</div>
+            <div class="request-email">{{ friend.friendMail }}</div>
+          </div>
+          <button (click)="removeFriend(friend.friendID)">Remove</button>
+        </div>
+      }
+      @for (mail of enteredMails; track mail) {
+        <div class="request-item">
+          <div class="request-info">
+            <div class="request-email">{{ mail }}</div>
+          </div>
+          <button (click)="removeEmail(mail)">Remove</button>
+        </div>
+      }
     </div>
-
-    <div *ngFor="let mail of enteredMails" class="request-item">
-      <div class="request-info">
-        <div class="request-email">{{ mail }}</div>
-      </div>
-      <button (click)="removeEmail(mail)">Remove</button>
-    </div>
-  </div>
+  }
 
   <!-- Action Buttons -->
   <div class="request-actions" style="margin-top: 12px;">
-    <button *ngIf="!isGroupChat && enteredMails.length > 0" (click)="CreateChat(false, [], enteredMails)">
-      Start Chat with Email
-    </button>
-    <button *ngIf="isGroupChat && (selectedFriends.length || enteredMails.length)" (click)="startGroupChat()">
-      Start Group Chat
-    </button>
+    @if (!isGroupChat && enteredMails.length > 0) {
+      <button (click)="CreateChat(false, [], enteredMails)">
+        Start Chat with Email
+      </button>
+    }
+    @if (isGroupChat && (selectedFriends.length || enteredMails.length)) {
+      <button (click)="startGroupChat()">
+        Start Group Chat
+      </button>
+    }
   </div>
 </div>

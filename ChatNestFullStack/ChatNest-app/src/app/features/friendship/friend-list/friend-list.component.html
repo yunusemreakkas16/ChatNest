@@ -10,26 +10,32 @@
   </div>
 
   <!-- Status Message -->
-  <div *ngIf="statusMessage"
-       [ngClass]="statusType === 'success' ? 'success-message' : 'error-message'"
-       class="status-banner">
-    {{ statusMessage }}
-  </div>
+  @if (statusMessage) {
+    <div
+      [ngClass]="statusType === 'success' ? 'success-message' : 'error-message'"
+      class="status-banner">
+      {{ statusMessage }}
+    </div>
+  }
 
   <!-- Friend List -->
   <div class="friend-list">
-    <div *ngIf="friends.length === 0 && !statusMessage" class="empty-message">
-      You don't have any friends yet.
-    </div>
-
-    <div *ngFor="let friend of friends" class="friend-item">
-      <div class="friend-info">
-        <div class="friend-name">{{ friend.friendName }}</div>
-        <div class="friend-mail">{{ friend.friendMail }}</div>
-        <div class="friend-date">{{ friend.createdAt | date:'short' }}</div>
+    @if (friends.length === 0 && !statusMessage) {
+      <div class="empty-message">
+        You don't have any friends yet.
       </div>
-      <button (click)="RemoveFriend(friend.friendID)" class="remove-btn">Remove</button>
-    </div>
+    }
+
+    @for (friend of friends; track friend) {
+      <div class="friend-item">
+        <div class="friend-info">
+          <div class="friend-name">{{ friend.friendName }}</div>
+          <div class="friend-mail">{{ friend.friendMail }}</div>
+          <div class="friend-date">{{ friend.createdAt | date:'short' }}</div>
+        </div>
+        <button (click)="RemoveFriend(friend.friendID)" class="remove-btn">Remove</button>
+      </div>
+    }
   </div>
 
 </div>

@@ -8,6 +8,8 @@
   <button type="submit">Register</button>
 </form>
 
-<div *ngIf="registerForm.get('confirmPassword')?.hasError('mismatch') && registerForm.get('confirmPassword')?.touched">
-  Passwords not matched.
-</div>
+@if (registerForm.get('confirmPassword')?.hasError('mismatch') && registerForm.get('confirmPassword')?.touched) {
+  <div>
+    Passwords not matched.
+  </div>
+}

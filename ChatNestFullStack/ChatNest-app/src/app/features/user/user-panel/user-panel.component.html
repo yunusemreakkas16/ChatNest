@@ -12,34 +12,41 @@
   </div>
 
   <!-- Status banners -->
-  <div *ngIf="loading" class="status-banner">
-    Loading user details...
-  </div>
+  @if (loading) {
+    <div class="status-banner">
+      Loading user details...
+    </div>
+  }
 
-  <div *ngIf="successMessage" class="status-banner success-message">
-    {{ successMessage }}
-  </div>
+  @if (successMessage) {
+    <div class="status-banner success-message">
+      {{ successMessage }}
+    </div>
+  }
 
-  <div *ngIf="errorMessage" class="status-banner error-message">
-    {{ errorMessage }}
-  </div>
+  @if (errorMessage) {
+    <div class="status-banner error-message">
+      {{ errorMessage }}
+    </div>
+  }
 
   <!-- User details card -->
-  <div *ngIf="user" class="user-card">
-    <div class="user-item-header">
-      <span class="user-name">👤 {{ user.userName }}</span>
-      <span class="user-role">🔑 {{ user.userRole }}</span>
+  @if (user) {
+    <div class="user-card">
+      <div class="user-item-header">
+        <span class="user-name">👤 {{ user.userName }}</span>
+        <span class="user-role">🔑 {{ user.userRole }}</span>
+      </div>
+      <div class="user-row">
+        <span class="user-label">📧 Email:</span>
+        <span class="user-value">{{ user.userEmail }}</span>
+      </div>
+      <div class="user-row">
+        <span class="user-label">📅 Created At:</span>
+        <span class="user-value">{{ user.createdAt | date:'medium' }}</span>
+      </div>
     </div>
-    <div class="user-row">
-      <span class="user-label">📧 Email:</span>
-      <span class="user-value">{{ user.userEmail }}</span>
-    </div>
-    
-    <div class="user-row">
-      <span class="user-label">📅 Created At:</span>
-      <span class="user-value">{{ user.createdAt | date:'medium' }}</span>
-    </div>
-  </div>
+  }
 
   <form [formGroup]="updateForm" (ngSubmit)="updateUser()" class="update-form">
     <div class="form-row">
@@ -59,5 +66,5 @@
       <button type="submit" class="header-btn primary">Update</button>
     </div>
   </form>
-    
+
 </div>

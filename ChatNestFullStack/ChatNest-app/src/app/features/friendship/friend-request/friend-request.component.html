@@ -16,41 +16,50 @@
   </div>
 
   <!-- Status Message -->
-  <div *ngIf="statusMessage"
-       [ngClass]="statusType === 'success' ? 'success-message' : 'error-message'"
-       class="status-banner">
-    {{ statusMessage }}
-  </div>
+  @if (statusMessage) {
+    <div
+      [ngClass]="statusType === 'success' ? 'success-message' : 'error-message'"
+      class="status-banner">
+      {{ statusMessage }}
+    </div>
+  }
 
   <!-- Requests List -->
   <div class="request-list">
-    <div *ngIf="requests.length === 0 && !statusMessage" class="empty-message">
-      No {{ activeTab }} requests.
-    </div>
-
-    <div *ngFor="let req of requests" class="request-item">
-      <div class="request-info">
-        <div class="request-name">{{ req.name }}</div>
-        <div class="request-email">{{ req.email }}</div>
-        <div class="request-status">Status: {{ req.friendShipStatus }}</div>
+    @if (requests.length === 0 && !statusMessage) {
+      <div class="empty-message">
+        No {{ activeTab }} requests.
       </div>
+    }
 
-      <div class="request-actions">
-        <!-- Accept, Reject for Received -->
-        <button *ngIf="activeTab === 'Received' && req.requesterID"
-                (click)="AcceptRequestAsync(req.requesterID!)"
-                class="accept-btn">Accept</button>
-
-        <button *ngIf="activeTab === 'Received' && req.requesterID"
-                (click)="RejectRequestAsync(req.requesterID!)"
-                class="reject-btn">Reject</button>
-
-        <!-- Cancel for Sent -->
-        <button *ngIf="activeTab === 'Sent'"
-                (click)="CancelRequestAsync(req.receiverID!)"
-                class="cancel-btn">Cancel</button>
+    @for (req of requests; track req) {
+      <div class="request-item">
+        <div class="request-info">
+          <div class="request-name">{{ req.name }}</div>
+          <div class="request-email">{{ req.email }}</div>
+          <div class="request-status">Status: {{ req.friendShipStatus }}</div>
+        </div>
+        <div class="request-actions">
+          <!-- Accept, Reject for Received -->
+          @if (activeTab === 'Received' && req.requesterID) {
+            <button
+              (click)="AcceptRequestAsync(req.requesterID!)"
+            class="accept-btn">Accept</button>
+          }
+          @if (activeTab === 'Received' && req.requesterID) {
+            <button
+              (click)="RejectRequestAsync(req.requesterID!)"
+            class="reject-btn">Reject</button>
+          }
+          <!-- Cancel for Sent -->
+          @if (activeTab === 'Sent') {
+            <button
+              (click)="CancelRequestAsync(req.receiverID!)"
+            class="cancel-btn">Cancel</button>
+          }
+        </div>
       </div>
-    </div>
+    }
   </div>
 
 </div>
